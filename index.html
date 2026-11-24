@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Dørflukt">
-<title>Dørflukt – 400 dører</title>
+<meta name="apple-mobile-web-app-title" content="100 Doors">
+<title>100 Doors Escape</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -20,10 +20,11 @@ html,body{margin:0;height:100%;background:radial-gradient(circle at 50% 30%,#2a1
 .screen{width:100%;max-width:520px;height:100%;display:flex;flex-direction:column;position:relative;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
 button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
 .menu{align-items:center;justify-content:center;gap:14px;padding:18px;text-align:center;overflow:auto}
-.logo svg{width:150px;height:150px;filter:drop-shadow(0 0 24px rgba(242,193,78,.4))}
+.logo svg{width:110px;height:140px;filter:drop-shadow(0 0 24px rgba(242,193,78,.4))}
 h1{font-size:40px;letter-spacing:5px;margin:0;font-weight:900;text-shadow:0 0 18px rgba(255,60,60,.55),0 3px 0 #000}
+h1 span{font-size:26px;letter-spacing:10px;color:#f2c14e}
 h2{margin:0;font-size:22px}
-.sub{opacity:.85;margin:0;max-width:340px}
+.sub{opacity:.85;margin:0;max-width:400px}
 .big{background:linear-gradient(#f6cf65,#d99a1e);color:#2a1606;font-weight:900;font-size:22px;padding:14px 48px;border-radius:16px;box-shadow:0 6px 0 #8a5a10,0 10px 30px rgba(0,0,0,.5)}
 .big:active{transform:translateY(4px);box-shadow:0 2px 0 #8a5a10}
 .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
@@ -150,8 +151,8 @@ let S={lang:'no',hero:'felicia',sound:true,scary:true,cur:[1,1,1,1],best:[0,0,0,
 function load(){try{const d=JSON.parse(localStorage.getItem('dorflukt2'));if(d)Object.assign(S,d)}catch(e){}if(!Array.isArray(S.cur)||S.cur.length!==4)S.cur=[1,1,1,1];if(!Array.isArray(S.best)||S.best.length!==4)S.best=[0,0,0,0]}
 function save(){try{localStorage.setItem('dorflukt2',JSON.stringify(S))}catch(e){}}
 const UI={
-no:{title:'DØRFLUKT',sub:'4 baner · 100 dører i hver · Klarer du å slippe ut?',play:'SPILL',choose:'Hvem skal du hjelpe ut?',worlds:'Velg bane',nothing:'Ingenting skjer.',noUse:'Det fungerer ikke her.',door:'Dør',enter:'Døren er åpen! Trykk på døren for å gå videre.',scary:'Skrekk',sound:'Lyd',on:'på',off:'av',reset:'Nullstill fremgang',win:'DU KLARTE DET!',escaped:'kom seg gjennom alle 100 dørene i',menu:'Til banene',close:'Lukk',offline:'Virker uten nett · Lagres automatisk',resetQ:'Vil du slette all fremgang?',wrongCode:'Feil kode. Prøv igjen!',selected:'Valgt',tapUse:'Trykk der du vil bruke den.',found:'Du fant',cont:'Fortsett',pickDoor:'Velg dør',eaten:'DEMONEN SPISTE DEG!',hurry:'Demonen kommer! Skynd deg!',timeLeft:'s',done:'Fullført!',back:'Tilbake',memTitle:'Finn like par!',combined:'Du satte sammen delene til en hel nøkkel!',again:'Spill banen på nytt'},
-en:{title:'DOOR ESCAPE',sub:'4 worlds · 100 doors each · Can you escape?',play:'PLAY',choose:'Who will you help escape?',worlds:'Choose a world',nothing:'Nothing happens.',noUse:"That doesn't work here.",door:'Door',enter:'The door is open! Tap the door to walk on.',scary:'Scares',sound:'Sound',on:'on',off:'off',reset:'Reset progress',win:'YOU DID IT!',escaped:'made it through all 100 doors in',menu:'To the worlds',close:'Close',offline:'Works offline · Saves automatically',resetQ:'Delete all progress?',wrongCode:'Wrong code. Try again!',selected:'Selected',tapUse:'Tap where you want to use it.',found:'You found',cont:'Continue',pickDoor:'Pick door',eaten:'THE DEMON ATE YOU!',hurry:'The demon is coming! Hurry!',timeLeft:'s',done:'Completed!',back:'Back',memTitle:'Find the matching pairs!',combined:'You put the pieces together into a whole key!',again:'Play the world again'}};
+no:{title:'100 DOORS<br><span>ESCAPE</span>',sub:'4 baner · 100 dører i hver · Klarer du å slippe ut?',play:'SPILL',choose:'Hvem skal du hjelpe ut?',worlds:'Velg bane',nothing:'Ingenting skjer.',noUse:'Det fungerer ikke her.',door:'Dør',enter:'Døren er åpen! Trykk på døren for å gå videre.',scary:'Skrekk',sound:'Lyd',on:'på',off:'av',reset:'Nullstill fremgang',win:'DU KLARTE DET!',escaped:'kom seg gjennom alle 100 dørene i',menu:'Til banene',close:'Lukk',offline:'Virker uten nett · Lagres automatisk',resetQ:'Vil du slette all fremgang?',wrongCode:'Feil kode. Prøv igjen!',selected:'Valgt',tapUse:'Trykk der du vil bruke den.',found:'Du fant',cont:'Fortsett',pickDoor:'Velg dør',eaten:'DEMONEN SPISTE DEG!',hurry:'Demonen kommer! Skynd deg!',timeLeft:'s',done:'Fullført!',back:'Tilbake',memTitle:'Finn like par!',combined:'Du satte sammen delene til en hel nøkkel!',again:'Spill banen på nytt'},
+en:{title:'100 DOORS<br><span>ESCAPE</span>',sub:'4 worlds · 100 doors each · Can you escape?',play:'PLAY',choose:'Who will you help escape?',worlds:'Choose a world',nothing:'Nothing happens.',noUse:"That doesn't work here.",door:'Door',enter:'The door is open! Tap the door to walk on.',scary:'Scares',sound:'Sound',on:'on',off:'off',reset:'Reset progress',win:'YOU DID IT!',escaped:'made it through all 100 doors in',menu:'To the worlds',close:'Close',offline:'Works offline · Saves automatically',resetQ:'Delete all progress?',wrongCode:'Wrong code. Try again!',selected:'Selected',tapUse:'Tap where you want to use it.',found:'You found',cont:'Continue',pickDoor:'Pick door',eaten:'THE DEMON ATE YOU!',hurry:'The demon is coming! Hurry!',timeLeft:'s',done:'Completed!',back:'Back',memTitle:'Find the matching pairs!',combined:'You put the pieces together into a whole key!',again:'Play the world again'}};
 const tx=o=>o==null?'':typeof o==='string'?(UI[S.lang][o]??o):(o[S.lang]??o.no);
 const rnd=Math.random,ri=(a,b)=>a+Math.floor(rnd()*(b-a+1)),pickr=a=>a[Math.floor(rnd()*a.length)];
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -577,7 +578,7 @@ window.addEventListener('devicemotion',e=>{const a=e.accelerationIncludingGravit
 
 /* ============ SKJERMER ============ */
 const render=h=>{$('#app').innerHTML=h};
-function logoSVG(){return `<svg viewBox="0 0 150 150"><rect width="150" height="150" rx="30" fill="#2f7f7a"/><rect x="40" y="18" width="70" height="122" fill="#7a4a22"/><rect x="46" y="24" width="58" height="116" fill="#c0472f"/><rect x="53" y="32" width="44" height="44" fill="none" stroke="#8f2f1d" stroke-width="4"/><rect x="53" y="84" width="44" height="46" fill="none" stroke="#8f2f1d" stroke-width="4"/><circle cx="92" cy="82" r="4" fill="#f2c14e"/><g transform="translate(64 66) rotate(-38) scale(1.9)">${keyIcon('#f2c14e','#9a6d10')}</g><rect x="8" y="8" width="52" height="30" rx="8" fill="#1a1a1a"/><text x="34" y="31" font-size="24" font-weight="900" fill="#f2c14e" text-anchor="middle" font-family="system-ui,Arial">100</text></svg>`}
+function logoSVG(){return `<svg viewBox="0 0 110 140"><rect x="5" y="5" width="100" height="135" rx="4" fill="#3a2212"/><rect x="15" y="15" width="80" height="125" fill="#fff3c4"/><rect x="15" y="15" width="80" height="125" fill="url(#lg)"/><defs><radialGradient id="lg"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#f2c14e"/></radialGradient></defs><path d="M15 15 L55 25 L55 135 L15 140Z" fill="#7a4f26"/><circle cx="48" cy="80" r="3" fill="#f2c14e"/><ellipse cx="78" cy="70" rx="4" ry="3" fill="#c0392b"/><ellipse cx="90" cy="70" rx="4" ry="3" fill="#c0392b"/></svg>`}
 function scrStart(){clearG();G=null;
  render(`<div class="screen menu"><div class="logo">${logoSVG()}</div><h1>${tx('title')}</h1><p class="sub">${tx('sub')}</p>
  <div class="row"><button class="chip ${S.lang==='no'?'on':''}" data-lang="no">Norsk</button><button class="chip ${S.lang==='en'?'on':''}" data-lang="en">English</button></div>
