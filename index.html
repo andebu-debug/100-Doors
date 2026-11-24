@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#120a14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Dørflukt</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%23120a14'/%3E%3Crect x='11' y='6' width='18' height='30' fill='%23f2c14e'/%3E%3Crect x='13' y='8' width='14' height='28' fill='%237a4f26'/%3E%3Ccircle cx='24' cy='22' r='1.6' fill='%23f2c14e'/%3E%3C/svg%3E">
+<style>
+:root{--acc:#f2c14e}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:radial-gradient(circle at 50% 30%,#2a1a2e,#0a070c 70%);color:#f3ead8;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden;user-select:none;-webkit-user-select:none}
+#app{height:100%;display:flex;justify-content:center}
+.screen{width:100%;max-width:520px;height:100%;display:flex;flex-direction:column;position:relative;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+.menu{align-items:center;justify-content:center;gap:16px;padding:20px;text-align:center;overflow:auto}
+.logo svg{width:110px;height:140px;filter:drop-shadow(0 0 24px rgba(242,193,78,.45))}
+h1{font-size:42px;letter-spacing:6px;margin:0;font-weight:900;text-shadow:0 0 18px rgba(255,60,60,.55),0 3px 0 #000}
+h2{margin:0 0 6px;font-size:24px}
+.sub{opacity:.85;margin:0;max-width:340px}
+.big{background:linear-gradient(#f6cf65,#d99a1e);color:#2a1606;font-weight:900;font-size:24px;padding:16px 56px;border-radius:16px;box-shadow:0 6px 0 #8a5a10,0 10px 30px rgba(0,0,0,.5)}
+.big:active{transform:translateY(4px);box-shadow:0 2px 0 #8a5a10}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.chip{background:#2a2030;padding:10px 16px;border-radius:12px;border:2px solid #3d3145;font-weight:600}
+.chip.on{border-color:var(--acc);background:#3a2c1a}
+.small{font-size:12px;opacity:.6;margin:0}
+.link{font-size:12px;opacity:.5;text-decoration:underline}
+.heroes{display:flex;gap:14px}
+.hero{background:#21182a;border:3px solid #3d3145;border-radius:18px;padding:14px;width:150px}
+.hero.on{border-color:var(--acc);box-shadow:0 0 18px rgba(242,193,78,.4)}
+.hero svg{width:110px;height:110px}
+.hero b{display:block;font-size:20px;margin-top:6px}
+.wtop{display:flex;align-items:center;gap:10px;width:100%}
+.wtop h2{flex:1;margin:0}
+.back{width:44px;height:44px;border-radius:12px;background:#2a2030;font-size:22px}
+.worlds{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.wc{background:#1d1524;border:2px solid #3d3145;border-radius:16px;padding:8px;text-align:center;position:relative}
+.wc .prev{width:100%;height:120px;border-radius:10px;background:#000;display:block;cursor:pointer}
+.wc h3{margin:6px 0 6px;font-size:16px}
+.dots{display:flex;gap:4px;justify-content:center}
+.dots button{width:27px;height:32px;border-radius:6px 6px 2px 2px;background:#3a2c3f;font-size:12px;font-weight:800;color:#bbb}
+.dots button.done{background:#2ecc71;color:#063}
+.dots button.next{background:var(--acc);color:#2a1606}
+.dots button:disabled{opacity:.3;cursor:default}
+.wc .lk{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;background:rgba(0,0,0,.72);border-radius:14px;padding:10px;gap:6px}
+.wc .lk b{font-size:30px}
+.top{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(0,0,0,.4)}
+.top button{width:42px;height:42px;border-radius:12px;background:#2a2030;font-size:20px;flex:none}
+.ttl{flex:1;text-align:center;font-weight:800;font-size:16px}
+.ttl small{display:block;font-weight:500;opacity:.7;font-size:12px}
+.stage{flex:1;min-height:0;position:relative}
+#scene{width:100%;height:100%;display:block;touch-action:none}
+.msg{min-height:60px;display:flex;align-items:center;gap:10px;padding:6px 12px;background:rgba(0,0,0,.5);font-size:15px;line-height:1.25}
+.msg .av svg{width:42px;height:42px;display:block}
+.msg.pop .tx{animation:pop .35s}
+.inv{display:flex;gap:6px;justify-content:center;padding:8px 8px 10px;background:linear-gradient(#2a1f18,#17110c);border-top:3px solid #5a4030}
+.slot{width:52px;height:52px;border-radius:10px;background:#0f0a07;border:2px solid #4a3527;padding:4px}
+.slot svg{width:100%;height:100%;display:block}
+.slot.sel{border-color:#f2c14e;box-shadow:0 0 14px #f2c14e;background:#3a2a10}
+#chase{position:absolute;left:12px;right:12px;top:8px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:#ff8a8a;pointer-events:none;text-shadow:0 1px 2px #000}
+#chase .bar{flex:1;height:10px;background:rgba(0,0,0,.7);border-radius:6px;overflow:hidden;border:1px solid #a33}
+#chase i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f39c12,#e74c3c);transition:width .25s linear}
+.ov{position:absolute;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:20}
+.ov[hidden]{display:none}
+.pad{background:#1e2326;border:3px solid #556;border-radius:18px;padding:16px;width:270px}
+.disp{background:#0b1a0b;color:#3f3;font:700 34px/1 ui-monospace,Consolas,monospace;letter-spacing:10px;text-align:center;padding:12px;border-radius:8px;margin-bottom:12px}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.keys button{height:56px;border-radius:10px;background:#3b4248;font-size:24px;font-weight:700;box-shadow:0 3px 0 #1a1d20}
+.keys button:active{transform:translateY(2px)}
+.pad .x{width:100%;margin-top:10px;padding:10px;border-radius:10px;background:#55303a;font-weight:700}
+.bad{animation:shake .4s}
+#scare{position:fixed;inset:0;z-index:100;background:#000;display:none;align-items:center;justify-content:center;overflow:hidden}
+#scare.on{display:flex;animation:scareIn 1s ease-out forwards}
+#scare svg{width:min(125vw,125vh);height:min(125vw,125vh);animation:zoom 1s ease-out forwards}
+#fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .4s;z-index:90}
+#fade.on{opacity:1}
+.hs{cursor:pointer}
+.spk{animation:spk 1.1s ease-in-out infinite}
+.shk{animation:shk .35s;transform-box:fill-box;transform-origin:50% 100%}
+.pl.opening{animation:dl 1.3s ease-in-out forwards}.pr.opening{animation:dr 1.3s ease-in-out forwards}
+.pl.opened{transform:translateX(-52px)}.pr.opened{transform:translateX(52px)}
+.glow{animation:glow 1.6s ease-in-out infinite}
+.peek{animation:peek 2.2s ease-in-out forwards}
+.pulse{animation:pulse 3s ease-in-out infinite}
+.shakeScreen{animation:shake .45s}
+@keyframes dl{to{transform:translateX(-52px)}}@keyframes dr{to{transform:translateX(52px)}}
+@keyframes spk{0%,100%{opacity:.12}50%{opacity:.55}}
+@keyframes shk{0%,100%{transform:rotate(0)}25%{transform:rotate(-9deg)}75%{transform:rotate(9deg)}}
+@keyframes glow{0%,100%{opacity:.7}50%{opacity:1}}
+@keyframes peek{0%{opacity:0}20%,80%{opacity:1}100%{opacity:0}}
+@keyframes pulse{0%,100%{opacity:0}50%{opacity:.13}}
+@keyframes pop{0%{transform:scale(.92);opacity:.3}100%{transform:none;opacity:1}}
+@keyframes shake{0%,100%{transform:none}20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+@keyframes zoom{0%{transform:scale(.25) rotate(-8deg)}14%{transform:scale(1.08) rotate(3deg)}24%{transform:scale(1) rotate(-2deg)}100%{transform:scale(1.18)}}
+@keyframes scareIn{0%{background:#fff}10%{background:#400}100%{background:#000}}
+.win{align-items:center;justify-content:center;text-align:center;gap:14px;padding:24px;overflow:hidden}
+.win .hb svg{width:160px;height:160px;animation:bounce 1s ease-in-out infinite}
+@keyframes bounce{50%{transform:translateY(-12px)}}
+.conf{position:absolute;top:-20px;width:9px;height:14px;animation:fall linear infinite;pointer-events:none}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="scare"></div>
+<div id="fade"></div>
+<script>
+"use strict";
+/* ================= GRUNNLAG ================= */
+const $=s=>document.querySelector(s);
+const L=(no,en)=>({no,en});
+let S={lang:'no',hero:'felicia',sound:true,scary:true,prog:[0,0,0,0]};
+function load(){try{const d=JSON.parse(localStorage.getItem('dorflukt'));if(d)Object.assign(S,d)}catch(e){}if(!Array.isArray(S.prog)||S.prog.length!==4)S.prog=[0,0,0,0]}
+function save(){try{localStorage.setItem('dorflukt',JSON.stringify(S))}catch(e){}}
+const UI={
+no:{title:'DØRFLUKT',sub:'Hjelp vennen din ut gjennom 20 skumle dører',play:'SPILL',choose:'Hvem skal du hjelpe ut?',worlds:'Velg bane',hint:'Hint',locked:'Døren er låst.',nothing:'Ingenting skjer.',noUse:'Det fungerer ikke her.',door:'Dør',enter:'Døren er åpen! Trykk på døren for å gå videre.',scary:'Skrekk',sound:'Lyd',on:'på',off:'av',reset:'Nullstill fremgang',win:'DU KLARTE DET!',escaped:'kom seg ut av',next:'Neste bane',menu:'Til banene',allDone:'Alle 20 dørene er åpnet! Du er en ekte dørmester!',lockedWorld:'Klar de tre andre banene først',chase:'Monsteret kommer!',caught:'Monsteret tok deg! Prøv igjen – raskere denne gangen.',close:'Lukk',offline:'Virker uten nett · Fremgangen lagres automatisk',resetQ:'Vil du slette all fremgang?',wrongCode:'Feil kode.',selected:'Valgt',tapUse:'Trykk der du vil bruke den.',found:'Du fant'},
+en:{title:'DOOR ESCAPE',sub:'Help your friend escape through 20 creepy doors',play:'PLAY',choose:'Who will you help escape?',worlds:'Choose a world',hint:'Hint',locked:'The door is locked.',nothing:'Nothing happens.',noUse:"That doesn't work here.",door:'Door',enter:'The door is open! Tap the door to go on.',scary:'Scares',sound:'Sound',on:'on',off:'off',reset:'Reset progress',win:'YOU DID IT!',escaped:'escaped from',next:'Next world',menu:'To the worlds',allDone:'All 20 doors are open! You are a true door master!',lockedWorld:'Finish the other three worlds first',chase:'The monster is coming!',caught:'The monster got you! Try again – faster this time.',close:'Close',offline:'Works offline · Progress saves automatically',resetQ:'Delete all progress?',wrongCode:'Wrong code.',selected:'Selected',tapUse:'Tap where you want to use it.',found:'You found'}};
+const tx=o=>o==null?'':typeof o==='string'?(UI[S.lang][o]??o):(o[S.lang]??o.no);
+
+/* ================= LYD (Web Audio) ================= */
+let AC=null,master=null,amb=null;
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.7;master.connect(AC.destination)}catch(e){return null}}if(AC.state==='suspended')AC.resume();return AC}
+function tone(f,d=.15,type='sine',v=.2,f2=null,delay=0){if(!S.sound)return;const a=ac();if(!a)return;const t=a.currentTime+delay;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(master);o.start(t);o.stop(t+d+.05)}
+function noise(d=.3,v=.3,fq=1000,ft='lowpass',delay=0){if(!S.sound)return;const a=ac();if(!a)return;const t=a.currentTime+delay;const len=Math.max(1,Math.floor(a.sampleRate*d));const b=a.createBuffer(1,len,a.sampleRate);const ch=b.getChannelData(0);for(let i=0;i<len;i++)ch[i]=Math.random()*2-1;const s=a.createBufferSource();s.buffer=b;const f=a.createBiquadFilter();f.type=ft;f.frequency.value=fq;const g=a.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+d+.02)}
+const SFX={
+ click:()=>tone(520,.05,'square',.04),
+ pick:()=>{tone(660,.1,'triangle',.2);tone(880,.1,'triangle',.2,null,.08);tone(1320,.2,'triangle',.2,null,.16)},
+ locked:()=>{noise(.07,.5,400);noise(.07,.5,400,'lowpass',.12);tone(110,.15,'square',.06)},
+ wrong:()=>tone(160,.35,'sawtooth',.14,90),
+ good:()=>{tone(880,.12,'sine',.2);tone(1320,.22,'sine',.2,null,.1)},
+ beep:()=>tone(1200,.05,'square',.05),
+ unlock:()=>{noise(.05,.5,3000,'highpass');tone(1500,.08,'square',.06,null,.06);tone(2000,.1,'triangle',.1,null,.12)},
+ door:()=>{tone(85,1.3,'sawtooth',.06,140);tone(130,1.2,'sawtooth',.035,70,.1);noise(1.2,.1,500)},
+ smash:()=>{noise(.45,.7,1800);tone(80,.3,'square',.18,40)},
+ whoosh:()=>noise(.35,.25,900,'bandpass'),
+ thud:()=>{tone(90,.12,'sine',.4,50);noise(.06,.2,200)},
+ power:()=>{tone(60,.7,'sawtooth',.12,130);noise(.3,.3,200);tone(880,.2,'square',.05,null,.6)},
+ step:()=>{noise(.08,.35,300);noise(.08,.35,300,'lowpass',.25)},
+ heart:()=>{tone(58,.13,'sine',.55);tone(52,.13,'sine',.45,null,.17)},
+ whisper:()=>noise(.7,.06,2500,'bandpass'),
+ mbox:()=>[659,622,587,554,523,494,523,415].forEach((f,i)=>tone(f,.45,'triangle',.12,null,i*.2)),
+ scare:()=>{noise(.9,.9,2500,'bandpass');tone(880,.9,'sawtooth',.32,170);tone(933,.9,'square',.22,150);tone(60,1,'sawtooth',.4,30)},
+ win:()=>[523,659,784,1046,784,1046].forEach((f,i)=>tone(f,.3,'triangle',.22,null,i*.14))
+};
+const NOTE=[392,523,659,784];
+function startAmb(w){stopAmb();if(!S.sound)return;const a=ac();if(!a)return;const v=w.ambV||.03;const g=a.createGain();g.gain.setValueAtTime(0,a.currentTime);g.gain.linearRampToValueAtTime(v,a.currentTime+2);g.connect(master);const os=w.amb.map((f,i)=>{const o=a.createOscillator();o.type=i?'triangle':'sine';o.frequency.value=f;o.connect(g);o.start();return o});const l=a.createOscillator(),lg=a.createGain();l.frequency.value=.15;lg.gain.value=v*.6;l.connect(lg);lg.connect(g.gain);l.start();amb={g,os:[...os,l]}}
+function stopAmb(){if(!amb)return;try{amb.os.forEach(o=>o.stop())}catch(e){}try{amb.g.disconnect()}catch(e){}amb=null}
+
+/* ================= TEGNEHJELPERE ================= */
+const R=(x,y,w,h,f,e='')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}" ${e}/>`;
+const C=(x,y,r,f,e='')=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${f}" ${e}/>`;
+const E=(x,y,rx,ry,f,e='')=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${f}" ${e}/>`;
+const P=(d,f,e='')=>`<path d="${d}" fill="${f}" ${e}/>`;
+const T=(x,y,s,sz,f,e='')=>`<text x="${x}" y="${y}" font-size="${sz}" fill="${f}" text-anchor="middle" font-family="system-ui,Arial,sans-serif" ${e}>${s}</text>`;
+const Ln=(x1,y1,x2,y2,s,w=2,e='')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${s}" stroke-width="${w}" ${e}/>`;
+const hs=(id,inner)=>`<g data-h="${id}" class="hs">${inner}</g>`;
+const HIT=(x,y,w,h)=>R(x,y,w,h,'#000','opacity=".01"');
+const itemAt=(id,x,y,s=.8)=>`<g transform="translate(${x-20*s} ${y-20*s}) scale(${s})">${ICON[id]}</g>`;
+const pick=(id,hid,x,y)=>hs(hid,C(x,y,19,'#fff','class="spk"')+itemAt(id,x,y,.9));
+const rot=(on,a,x,y)=>on?`transform="rotate(${a} ${x} ${y})"`:'';
+function star(x,y,r1,r2){let d='';for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r2:r1;d+=(i?'L':'M')+(x+rr*Math.cos(a)).toFixed(1)+' '+(y+rr*Math.sin(a)).toFixed(1)}return d+'Z'}
+function keyIcon(a,b){return `<circle cx="12" cy="20" r="7" fill="none" stroke="${a}" stroke-width="4.5"/><rect x="18" y="18" width="18" height="4.5" fill="${a}"/><rect x="28" y="22" width="3.5" height="7" fill="${a}"/><rect x="33" y="22" width="3" height="5" fill="${a}"/><circle cx="12" cy="20" r="9.3" fill="none" stroke="${b}" stroke-width="1" opacity=".7"/>`}
+
+/* ================= GJENSTANDER ================= */
+const ICON={
+ key:keyIcon('#f2c14e','#9a6d10'),
+ rkey:keyIcon('#b5651d','#5e2d0c'),
+ skey:`<g transform="translate(6 6) scale(.7)">${keyIcon('#dfe6e9','#7f8c8d')}</g>`,
+ hammer:`<g transform="rotate(-35 20 20)"><rect x="17.5" y="12" width="5" height="26" rx="2" fill="#8b5a2b"/><rect x="8" y="5" width="24" height="10" rx="2" fill="#7f8c8d"/><rect x="8" y="5" width="24" height="3" fill="#aab7b8"/></g>`,
+ crowbar:`<path d="M8 35 L29 11 Q33 6 37 10" stroke="#c0392b" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M6 33 L10 37" stroke="#7b241c" stroke-width="3" stroke-linecap="round"/>`,
+ handle:`<rect x="5" y="12" width="11" height="18" rx="3" fill="#9a7010"/><rect x="11" y="16" width="25" height="7" rx="3.5" fill="#d4a017"/>`,
+ card:`<rect x="5" y="10" width="30" height="20" rx="3" fill="#2e86de"/><rect x="5" y="14" width="30" height="4" fill="#1b4f8a"/><rect x="9" y="22" width="10" height="5" rx="1" fill="#f5d76e"/>`,
+ fuse:`<rect x="10" y="13" width="20" height="14" rx="2" fill="#eee" stroke="#999"/><rect x="4" y="17" width="6" height="6" fill="#b8b8b8"/><rect x="30" y="17" width="6" height="6" fill="#b8b8b8"/><rect x="16" y="16" width="8" height="8" fill="#e74c3c"/>`,
+ battery:`<rect x="7" y="11" width="23" height="18" rx="2" fill="#2d3436"/><rect x="7" y="11" width="9" height="18" rx="2" fill="#e1b12c"/><rect x="30" y="16" width="4" height="8" fill="#999"/><text x="22" y="24" font-size="9" fill="#fff" text-anchor="middle">+</text>`,
+ bulb:`<circle cx="20" cy="16" r="10" fill="#fff59d" stroke="#d4ac0d"/><rect x="15" y="25" width="10" height="9" rx="1" fill="#aaa"/><path d="M15 28 h10 M15 31 h10" stroke="#777"/>`
+};
+const ITEMS={key:L('gullnøkkel','golden key'),rkey:L('rusten nøkkel','rusty key'),skey:L('liten nøkkel','small key'),hammer:L('hammer','hammer'),crowbar:L('brekkjern','crowbar'),handle:L('dørhåndtak','door handle'),card:L('nøkkelkort','key card'),fuse:L('sikring','fuse'),battery:L('batteri','battery'),bulb:L('lyspære','light bulb')};
+const COL=[{c:'#e74c3c'},{c:'#3498db'},{c:'#2ecc71'},{c:'#f1c40f'}];
+
+/* ================= HELTER ================= */
+const HEROES={felicia:{name:'Felicia'},oscar:{name:'Oscar'}};
+const heroName=()=>HEROES[S.hero].name;
+function heroSVG(h){
+ const face=`<circle cx="50" cy="50" r="20" fill="#f5c9a5"/><circle cx="43" cy="51" r="2.7" fill="#2d2d2d"/><circle cx="57" cy="51" r="2.7" fill="#2d2d2d"/><circle cx="38" cy="57" r="3" fill="#f5a0a0" opacity=".6"/><circle cx="62" cy="57" r="3" fill="#f5a0a0" opacity=".6"/><path d="M44 59 Q50 64 56 59" stroke="#8a3b2b" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+ if(h==='felicia')return `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#4a2340"/><path d="M24 62 Q20 20 50 18 Q80 20 76 62 L78 88 L22 88Z" fill="#8a4a22"/><rect x="28" y="72" width="44" height="30" rx="14" fill="#e0457b"/>${face}<path d="M30 46 Q32 26 50 27 Q68 26 70 46 Q62 35 50 36 Q38 35 30 46Z" fill="#8a4a22"/><circle cx="69" cy="34" r="4" fill="#f1c40f"/></svg>`;
+ return `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#1f3550"/><rect x="28" y="72" width="44" height="30" rx="14" fill="#3a7bd5"/>${face}<path d="M31 47 Q32 32 50 31 Q68 32 69 47 Q63 40 50 40 Q37 40 31 47Z" fill="#2b1d12"/><path d="M29 41 Q30 22 50 22 Q70 22 71 41Z" fill="#2ecc71"/><rect x="52" y="36" width="27" height="6" rx="3" fill="#1e8449"/></svg>`;
+}
+
+/* ================= MONSTRE (skrekk-skjerm) ================= */
+const MON={
+school:`<rect width="200" height="200" fill="#050505"/><ellipse cx="100" cy="112" rx="64" ry="82" fill="#8d978f"/><path d="M42 66 Q100 6 158 66Z" fill="#2c3e50"/><rect x="28" y="60" width="144" height="12" rx="6" fill="#1f2d3a"/><ellipse cx="74" cy="102" rx="18" ry="22" fill="#000"/><ellipse cx="126" cy="102" rx="18" ry="22" fill="#000"/><circle cx="74" cy="106" r="5" fill="#fff"/><circle cx="126" cy="106" r="5" fill="#fff"/><path d="M58 146 Q100 205 142 146 Q100 160 58 146Z" fill="#000"/><path d="M64 150 l6 12 l6 -10 l6 13 l6 -12 l6 13 l6 -13 l6 13 l6 -12 l6 12 l6 -12" fill="none" stroke="#eee" stroke-width="3"/><path d="M58 86 L90 92 M110 92 L142 86" stroke="#333" stroke-width="5"/>`,
+house:`<rect width="200" height="200" fill="#000"/><path d="M28 200 Q14 50 100 24 Q186 50 172 200Z" fill="#111"/><ellipse cx="100" cy="108" rx="48" ry="66" fill="#e6eef0"/><ellipse cx="80" cy="98" rx="13" ry="18" fill="#000"/><ellipse cx="120" cy="98" rx="13" ry="18" fill="#000"/><circle cx="80" cy="100" r="2.5" fill="#fff"/><circle cx="120" cy="100" r="2.5" fill="#fff"/><ellipse cx="100" cy="150" rx="15" ry="26" fill="#000"/><path d="M60 50 Q70 110 62 160 M140 50 Q132 110 140 160 M85 44 Q88 80 80 92" stroke="#111" stroke-width="7" fill="none"/>`,
+mall:`<rect width="200" height="200" fill="#0a0a0a"/><ellipse cx="100" cy="104" rx="58" ry="78" fill="#e3c9a8"/><path d="M118 30 L108 70 L124 96 L110 130" stroke="#6b4f3a" stroke-width="3" fill="none"/><circle cx="78" cy="96" r="13" fill="#200"/><circle cx="122" cy="96" r="13" fill="#200"/><circle cx="78" cy="96" r="6" fill="#ff1a1a"/><circle cx="122" cy="96" r="6" fill="#ff1a1a"/><path d="M66 140 L78 160 L88 146 L100 168 L112 146 L122 160 L134 140 Q100 196 66 140Z" fill="#100"/>`,
+nightmare:`<rect width="200" height="200" fill="#000"/><path d="M6 200 Q14 30 100 14 Q186 30 194 200Z" fill="#1a0510"/>`+[[60,70,9],[140,70,9],[100,50,6],[40,110,6],[160,110,6],[78,96,13],[122,96,13]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#ff1a3a"/><circle cx="${x}" cy="${y}" r="${r/3}" fill="#fff"/>`).join('')+`<path d="M36 128 Q100 200 164 128 Q100 150 36 128Z" fill="#000" stroke="#ff1a3a" stroke-width="2"/><path d="M44 132 l8 14 l8 -10 l8 16 l8 -14 l8 18 l8 -16 l8 18 l8 -16 l8 16 l8 -14 l8 14 l8 -12" fill="none" stroke="#f3eee0" stroke-width="3"/>`
+};
+
+/* ================= ROM OG DØR ================= */
+function floor(c){const ys=[460,474,492,516,548,600];const lx=y=>50-(y-460)*50/140,rx=y=>350+(y-460)*50/140;let s='';const cols=8;
+ for(let r=0;r<ys.length-1;r++){const y1=ys[r],y2=ys[r+1];for(let i=0;i<cols;i++){const a=i/cols,b=(i+1)/cols;const w1=rx(y1)-lx(y1),w2=rx(y2)-lx(y2);
+  const p=[[lx(y1)+w1*a,y1],[lx(y1)+w1*b,y1],[lx(y2)+w2*b,y2],[lx(y2)+w2*a,y2]].map(q=>q[0].toFixed(1)+','+q[1]).join(' ');
+  const col=c.chk?((i+r)%2?c.fA:c.fB):(i%2?c.fA:c.fB);s+=`<polygon points="${p}" fill="${col}" stroke="${c.fl}" stroke-width=".6"/>`}}return s}
+function room(th){const c=th.c;return `<polygon points="0,0 400,0 350,60 50,60" fill="${c.ceil}"/><polygon points="0,0 50,60 50,460 0,600" fill="${c.side}"/><polygon points="400,0 350,60 350,460 400,600" fill="${c.side}"/>${R(50,60,300,400,c.wall)}${floor(c)}${th.decor()}${R(50,448,300,12,c.base)}`}
+function panel(x,d){let s=R(x,230,50,230,d.p,`stroke="${d.p2}" stroke-width="2"`);
+ if(d.t==='win')s+=R(x+12,250,26,40,'#22343c',`stroke="${d.p2}" stroke-width="3"`)+Ln(x+16,256,x+22,264,'#5d7c88',1.5)+R(x+9,315,32,120,'none',`stroke="${d.p2}" stroke-width="2"`);
+ if(d.t==='old')s+=R(x+8,245,34,85,'none',`stroke="${d.p2}" stroke-width="3"`)+R(x+8,345,34,100,'none',`stroke="${d.p2}" stroke-width="3"`)+P(`M${x+20} 230 l6 30 l-5 20 l8 25`,'none','stroke="#1a0d06" stroke-width="1.5"');
+ if(d.t==='glass')s=R(x,230,50,230,'#bfe6f2','opacity=".5" stroke="#5a5f6b" stroke-width="4"')+Ln(x+10,300,x+30,262,'#fff',2,'opacity=".6"')+Ln(x+14,334,x+40,292,'#fff',1.5,'opacity=".4"');
+ if(d.t==='teeth'){for(let i=0;i<5;i++)s+=P(`M${x+i*10} 230 l5 16 l5 -16Z`,'#f3eee0')+P(`M${x+i*10} 460 l5 -14 l5 14Z`,'#f3eee0');s+=E(x+25,310,11,7,'#f5f5f5')+C(x+25,310,4.5,'#c0392b','class="glow"')+C(x+25,310,2,'#000')}
+ return s}
+function doorSVG(th){const d=th.d,cls=G.open?(G.anim?'opening':'opened'):'';const num=G.w*5+G.l+1;const kn=G.lv.noKnob?'':C(207,345,3.6,'#d4af37');
+ return R(144,224,112,236,d.f)+(G.open?R(150,230,100,230,'url(#passG)','class="glow"'):R(150,230,100,230,'#0c0808'))
+ +`<g clip-path="url(#dc)"><g class="pl ${cls}">${panel(150,d)}${C(193,345,3.6,'#d4af37')}</g><g class="pr ${cls}">${panel(200,d)}${kn}${G.lv.doorDeco?G.lv.doorDeco(G.st):''}</g></g>`
+ +R(180,203,40,18,d.f,'rx="3" stroke="#d4af37"')+T(200,216,num,12,'#f5e6b8','font-weight="bold"')
+ +`<rect data-h="door" class="hs" x="150" y="230" width="100" height="230" fill="#000" opacity=".01"/>`}
+function defs(th){return `<defs><clipPath id="dc"><rect x="150" y="230" width="100" height="230"/></clipPath><radialGradient id="passG" cx=".5" cy=".6" r=".7"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="${th.light}"/><stop offset="1" stop-color="${th.light}" stop-opacity=".5"/></radialGradient><radialGradient id="vig" cx=".5" cy=".45" r=".75"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="${th.vig}"/></radialGradient><radialGradient id="fl" gradientUnits="userSpaceOnUse" cx="${G.fx}" cy="${G.fy}" r="105"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".55" stop-color="#000" stop-opacity=".12"/><stop offset="1" stop-color="#000" stop-opacity=".97"/></radialGradient></defs>`}
+const keyhole=()=>R(222,334,14,24,'#c9a227','rx="3"')+C(229,342,3,'#111')+R(228,342,2.4,9,'#111');
+function padSVG(ok,on=1){let s=R(264,300,32,48,'#2d3436','rx="4" stroke="#7f8c8d" stroke-width="2"')+R(268,304,24,9,on?(ok?'#2ecc71':'#0f3d1a'):'#111');for(let r=0;r<3;r++)for(let c=0;c<3;c++)s+=R(269+c*8,318+r*9,6,6,on?'#b2bec3':'#555','rx="1"');return s}
+const readerSVG=ok=>R(264,298,30,46,'#2d3436','rx="4" stroke="#7f8c8d" stroke-width="2"')+R(270,306,18,4,'#000')+R(268,316,22,12,'#1e272e')+C(279,335,4,ok?'#2ecc71':'#e74c3c','class="glow"');
+const frame=(x,y,w,h,inner)=>R(x,y,w,h,'#b8860b','stroke="#7a5a10" stroke-width="2"')+R(x+6,y+6,w-12,h-12,'#2b1d16')+inner;
+const fuseBox=(on,x,y)=>R(x,y,60,72,'#95a5a6','rx="4" stroke="#555" stroke-width="2"')+P(`M${x+33} ${y+5} l-7 11 h5 l-3 9 l8 -12 h-5z`,'#f1c40f')+R(x+18,y+28,24,14,on?'#ecf0f1':'#1a1a1a','stroke="#555"')+(on?R(x+24,y+31,12,8,'#e74c3c'):'')+C(x+30,y+58,5,on?'#2ecc71':'#c0392b','class="glow"');
+function scatter(n,zones){const pts=[];const area=zones.map(z=>(z[2]-z[0])*(z[3]-z[1]));const tot=area.reduce((a,b)=>a+b,0);let tries=0;
+ while(pts.length<n&&tries<6000){tries++;let r=Math.random()*tot,zi=0;while(r>area[zi]){r-=area[zi];zi++}const z=zones[zi];const x=z[0]+Math.random()*(z[2]-z[0]),y=z[1]+Math.random()*(z[3]-z[1]);if(pts.every(p=>Math.hypot(p[0]-x,p[1]-y)>(tries<4000?31:24)))pts.push([x,y])}
+ while(pts.length<n)pts.push([62+Math.random()*76,90+Math.random()*340]);return pts}
+function rseq(n){const a=[];while(a.length<n){const c=Math.floor(Math.random()*4);if(c!==a[a.length-1])a.push(c)}return a}
+
+/* ================= GÅTE-TYPER ================= */
+const base=k=>({k,scare:k.scare,chase:k.chase});
+function nu(){say('noUse');G.sel=null;drawInv();return true}
+const NOMORE=L('Ikke noe mer her.','Nothing more here.');
+
+/* 1: Finn skjult nøkkel */
+function B1(k){return{...base(k),
+ init:()=>({mv:{},t:{},got:0}),
+ doorDeco:()=>keyhole(),
+ draw(st){let s='';for(const p of k.spots){const sh=p.taps&&!st.mv[p.id]&&Date.now()-(st.shk||0)<360;s+=hs(p.id,`<g ${sh?'class="shk"':''}>${p.draw(!!st.mv[p.id])}</g>`);if(p.key&&st.mv[p.id]&&!st.got)s+=pick(k.item,'getkey',p.kx,p.ky)}return s},
+ click(id,st,sel){const p=k.spots.find(q=>q.id===id);
+  if(p){if(sel)return nu();
+   if(!st.mv[id]){if(p.taps){if(!G.askedMotion&&window.DeviceMotionEvent&&DeviceMotionEvent.requestPermission){G.askedMotion=1;DeviceMotionEvent.requestPermission().catch(()=>{})}st.t[id]=(st.t[id]||0)+1;st.shk=Date.now();if(st.t[id]<p.taps){SFX.thud();say(p.tapMsg);return true}}
+    st.mv[id]=1;SFX.whoosh();say(p.key?p.msg:p.empty);return true}
+   say(p.key&&!st.got?L('Noe glinser der!','Something is shining there!'):(p.empty||NOMORE));return true}
+  if(id==='getkey'){st.got=1;give(k.item);return true}
+  if(id==='door'){if(sel===k.item){use(k.item);openDoor();return true}if(sel)return nu();SFX.locked();say(L('Døren er låst. Jeg ser et nøkkelhull.','The door is locked. I can see a keyhole.'));return true}},
+ onShake(st){const p=k.spots.find(q=>q.taps&&!st.mv[q.id]);if(p)this.click(p.id,st,null)},
+ hint(st){const kp=k.spots.find(p=>p.key);return !st.mv[kp.id]?k.h0:!st.got?L('Plukk opp nøkkelen.','Pick up the key.'):L('Trykk på nøkkelen nederst for å velge den, og trykk så på døren.','Tap the key at the bottom to select it, then tap the door.')}
+}}
+
+/* 2: Tell ting -> kode */
+const Z2=[[62,84,138,440],[262,84,340,288],[262,362,340,440],[42,484,272,586]];
+function B2(k){return{...base(k),
+ init(){const counts=k.cats.map(()=>1+Math.floor(Math.random()*k.max));const pts=scatter(counts.reduce((a,b)=>a+b,0),Z2);const objs=[];let i=0;counts.forEach((c,ci)=>{for(let j=0;j<c;j++){const p=pts[i++];objs.push([ci,Math.round(p[0]),Math.round(p[1])])}});for(let j=objs.length-1;j>0;j--){const r=Math.floor(Math.random()*(j+1));[objs[j],objs[r]]=[objs[r],objs[j]]}return{code:counts.join(''),objs,hi:0}},
+ isDark:()=>!!k.dark,
+ draw(st){let s='';for(const [ci,x,y] of st.objs)s+=hs('o'+ci,k.cats[ci].d(x,y));s+=hs('clue',HIT(150,80,100,112)+k.clue(k.cats));s+=hs('pad',padSVG(st.ok));return s},
+ click(id,st,sel){
+  if(id==='door'){if(sel)return nu();SFX.locked();say(L('Døren er låst. Panelet ved siden av vil ha en kode.','The door is locked. The panel next to it wants a code.'));return true}
+  if(sel)return nu();
+  if(/^o\d$/.test(id)){say(k.cats[+id[1]].n);return true}
+  if(id==='clue'){say(k.clueMsg);return true}
+  if(id==='pad'){keypad(3,v=>v===st.code,()=>{st.ok=1;openDoor()});return true}},
+ hint(st){const h=[L('Se på hintet over døren.','Look at the clue above the door.'),L('Tell hvor mange det er av hver ting i rommet. Tallene i samme rekkefølge som over døren er koden.','Count how many there are of each thing in the room. The numbers in the same order as above the door make the code.'),L('Trykk på kodepanelet til høyre for døren og tast inn koden.','Tap the keypad right of the door and enter the code.')];if(k.dark)h.splice(1,0,L('Det er mørkt! Dra fingeren eller musen rundt for å lyse med lommelykten.','It is dark! Drag your finger or mouse around to use the flashlight.'));return h[st.hi++%h.length]}
+}}
+
+/* 3: Verktøy -> kasse -> belønning */
+function B3(k){return{...base(k),noKnob:k.target==='handle',
+ init:()=>({}),
+ doorDeco(st){if(k.target==='door')return keyhole();if(k.target==='handle')return st.hin?R(203,338,9,15,'#b8860b','rx="2"')+R(206,342,22,6,'#d4a017','rx="3"'):R(203,338,9,15,'#1a0d06','rx="2"')+C(207.5,345,2.5,'#000');return''},
+ draw(st){let s=hs('box',k.box(!!st.bo));if(st.bo&&!st.tg)s+=pick(k.tool,'tool',...k.tp);s+=hs('crate',k.crate(!!st.br));if(st.br&&!st.rg)s+=pick(k.rew,'rew',...k.rp);if(k.target==='reader')s+=hs('reader',readerSVG(st.done));return s},
+ click(id,st,sel){
+  if(id==='box'){if(sel)return nu();if(!st.bo){st.bo=1;SFX.whoosh();say(k.boxMsg)}else say(st.tg?NOMORE:L('Der ligger noe!','There is something there!'));return true}
+  if(id==='tool'){st.tg=1;give(k.tool);return true}
+  if(id==='crate'){if(st.br){if(sel)return nu();say(st.rg?L('Den er tom nå.','It is empty now.'):L('Noe ligger i restene!','Something is in the wreck!'));return true}
+   if(sel===k.tool){use(k.tool);st.br=1;SFX.smash();shakeScreen();say(k.smashMsg);return true}if(sel)return nu();SFX.locked();say(k.crateMsg);return true}
+  if(id==='rew'){st.rg=1;give(k.rew);return true}
+  if(id==='reader'){if(sel==='card'){use('card');st.done=1;SFX.good();openDoor();return true}if(sel)return nu();say(L('En kortleser. Den lyser rødt.','A card reader. It glows red.'));return true}
+  if(id==='door'){if(k.target==='door'&&sel===k.rew){use(k.rew);openDoor();return true}
+   if(k.target==='handle'&&sel==='handle'){use('handle');st.hin=1;openDoor();return true}
+   if(sel)return nu();SFX.locked();say(k.doorMsg);return true}},
+ hint(st){return !st.bo?k.h0:!st.tg?L('Ta verktøyet du fant.','Take the tool you found.'):!st.br?L('Velg verktøyet nederst og trykk på kassa.','Select the tool at the bottom and tap the crate.'):!st.rg?L('Ta det som lå inni.','Take what was inside.'):k.h4}
+}}
+
+/* 4: Farge-rekkefølge over døren */
+const BP=[[180,112],[220,112],[180,152],[220,152]];
+function B4(k){return{...base(k),
+ init:()=>({seq:rseq(k.n),inp:[],seen:0,cf:-1,bf:-1,hi:0}),
+ draw(st){let s=hs('clue',k.clue(st));s+=R(154,88,92,88,'#161616','rx="12" stroke="#777" stroke-width="3"');
+  BP.forEach(([x,y],i)=>s+=hs('b'+i,C(x,y,17,COL[i].c,`opacity="${st.bf===i?1:.72}" stroke="${st.bf===i?'#fff':'#000'}" stroke-width="3"`)+(st.bf===i?C(x,y,24,COL[i].c,'opacity=".35"'):'')));
+  const n=st.seq.length;for(let i=0;i<n;i++)s+=C(200-(n-1)*7+i*14,188,3.6,i<st.inp.length?'#2ecc71':'#444');return s},
+ click(id,st,sel){
+  if(/^b\d$/.test(id)){if(sel)nu();if(G.open)return true;const i=+id[1];st.bf=i;tone(NOTE[i],.25,'sine',.25);later(()=>{st.bf=-1;drawScene()},200);st.inp.push(i);
+   if(st.seq[st.inp.length-1]!==i){st.inp=[];later(()=>{SFX.wrong();say(L('Feil rekkefølge! Prøv igjen fra starten.','Wrong order! Try again from the start.'))},220)}
+   else if(st.inp.length===st.seq.length){later(()=>{SFX.good();openDoor()},300)}return true}
+  if(id==='clue'){if(sel)return nu();st.seen=1;if(k.simon)playSeq(st);say(k.clueMsg);return true}
+  if(id==='door'){if(sel)return nu();SFX.locked();say(L('Døren har ingen nøkkelhull... men knappene over den lyser.','The door has no keyhole... but the buttons above it are glowing.'));return true}},
+ hint(st){if(!st.seen)return k.h0;const h=[k.h1,L('Trykk knappene i samme rekkefølge. Gjør du feil, må du begynne på nytt.','Press the buttons in the same order. If you make a mistake, start over.')];return h[st.hi++%2]}
+}}
+function playSeq(st){if(st.playing)return;st.playing=1;let t=350;st.seq.forEach(c=>{later(()=>{st.cf=c;tone(NOTE[c],.35,'sine',.2);drawScene()},t);t+=480;later(()=>{st.cf=-1;drawScene()},t);t+=180});later(()=>{st.playing=0},t)}
+
+/* 5: Kombinasjon: strøm + kode */
+function B5(k){return{...base(k),
+ init:()=>({code:Array.from({length:4},()=>1+Math.floor(Math.random()*9)).join('')}),
+ isDark:st=>!st.on,
+ draw(st){let s=hs('a',k.a(!!st.ad));if(st.ad&&!st.sg)s+=pick('skey','sk',...k.sp);s+=hs('dr',k.dr(!!st.dro));if(st.dro&&!st.pg)s+=pick(k.part,'pt',...k.pp);s+=hs('fb',k.box(!!st.on));s+=hs('cd',HIT(150,80,100,112)+k.code(!!st.on,st.code));s+=hs('pad',padSVG(st.ok,st.on));return s},
+ click(id,st,sel){
+  if(id==='a'){if(sel)return nu();if(!st.ad){st.ad=1;SFX.whoosh();say(k.aMsg)}else say(NOMORE);return true}
+  if(id==='sk'){st.sg=1;give('skey');return true}
+  if(id==='dr'){if(st.dro){if(sel)return nu();say(st.pg?L('Tomt.','Empty.'):L('Noe ligger der!','Something is there!'));return true}
+   if(sel==='skey'){use('skey');st.dro=1;SFX.unlock();say(k.drMsg);return true}if(sel)return nu();SFX.locked();say(k.drLock);return true}
+  if(id==='pt'){st.pg=1;give(k.part);return true}
+  if(id==='fb'){if(st.on){if(sel)return nu();say(L('Strømmen er på.','The power is on.'));return true}
+   if(sel===k.part){use(k.part);st.on=1;SFX.power();say(k.onMsg);if(k.scarePower)later(()=>scare(),900);return true}if(sel)return nu();say(k.boxMsg);return true}
+  if(id==='cd'){if(sel)return nu();say(st.on?L('Det står: '+st.code,'It says: '+st.code):k.cdDark);return true}
+  if(id==='pad'){if(sel)return nu();if(!st.on){SFX.locked();say(L('Kodepanelet er dødt. Det trengs strøm.','The keypad is dead. It needs power.'));return true}keypad(4,v=>v===st.code,()=>{st.ok=1;openDoor()});return true}
+  if(id==='door'){if(sel)return nu();SFX.locked();say(L('Døren er låst med et kodepanel.','The door is locked with a keypad.'));return true}},
+ hint(st){const h=[k.h0,L('Plukk opp den lille nøkkelen.','Pick up the small key.'),k.h2,L('Plukk opp det du fant.','Pick up what you found.'),k.h4,k.h5];return h[!st.ad?0:!st.sg?1:!st.dro?2:!st.pg?3:!st.on?4:5]}
+}}
+
+/* ================= TELLE-TING ================= */
+const CAT={
+ book:{d:(x,y)=>R(x-7,y-9,14,18,'#2f6fd6','rx="1"')+R(x-7,y-9,3,18,'#1d4a99'),n:L('En blå bok.','A blue book.')},
+ apple:{d:(x,y)=>C(x,y+1,7,'#d63031')+R(x-1,y-9,2,5,'#6d4c41')+E(x+4,y-7,3,1.6,'#27ae60'),n:L('Et rødt eple.','A red apple.')},
+ pencil:{d:(x,y)=>`<g transform="rotate(-30 ${x} ${y})">${R(x-2.5,y-10,5,15,'#f1c40f')}${P(`M${x-2.5} ${y+5} L${x+2.5} ${y+5} L${x} ${y+11}Z`,'#e0b98a')}${R(x-2.5,y-12,5,3,'#e17055')}</g>`,n:L('En gul blyant.','A yellow pencil.')},
+ candle:{d:(x,y)=>R(x-3,y-5,6,14,'#f5f0e1')+E(x,y-9,2.5,4,'#ffb300','class="glow"'),n:L('Et stearinlys.','A candle.')},
+ spider:{d:(x,y)=>P(`M${x-9} ${y-5} L${x} ${y} L${x+9} ${y-5} M${x-10} ${y+1} L${x+10} ${y+1} M${x-9} ${y+6} L${x} ${y} L${x+9} ${y+6}`,'none','stroke="#000" stroke-width="1.5"')+C(x,y,5,'#000')+C(x-1.5,y-1,1,'#f00')+C(x+1.5,y-1,1,'#f00'),n:L('En edderkopp. Æsj!','A spider. Yuck!')},
+ bottle:{d:(x,y)=>R(x-4,y-3,8,13,'#2e7d32','rx="2"')+R(x-1.5,y-10,3,8,'#2e7d32')+R(x-3,y+1,6,4,'#e8d8a8'),n:L('En gammel flaske.','An old bottle.')},
+ bag:{d:(x,y)=>P(`M${x-4} ${y-4} Q${x} ${y-12} ${x+4} ${y-4}`,'none','stroke="#e84393" stroke-width="2"')+R(x-7,y-4,14,14,'#e84393','rx="1"'),n:L('En handlepose.','A shopping bag.')},
+ balloon:{d:(x,y)=>Ln(x,y+6,x+1,y+14,'#666',1)+E(x,y-2,6,8,'#0984e3'),n:L('En blå ballong.','A blue balloon.')},
+ star:{d:(x,y)=>P(star(x,y,8,3.5),'#f9ca24','stroke="#c79a00"'),n:L('En gul stjerne.','A yellow star.')},
+ eye:{d:(x,y)=>E(x,y,9,5.5,'#f5f5f5')+C(x,y,3.2,'#c0392b')+C(x,y,1.4,'#000'),n:L('Et øye. Det blunket!','An eye. It blinked!')},
+ moon:{d:(x,y)=>P(`M${x+2} ${y-8} A8 8 0 1 0 ${x+2} ${y+8} A6 6 0 1 1 ${x+2} ${y-8}Z`,'#f9e79f'),n:L('En måne.','A moon.')},
+ bat:{d:(x,y)=>P(`M${x} ${y+3} Q${x-4} ${y-5} ${x-12} ${y-3} Q${x-8} ${y} ${x-9} ${y+4} Q${x-5} ${y+2} ${x} ${y+5} Q${x+5} ${y+2} ${x+9} ${y+4} Q${x+8} ${y} ${x+12} ${y-3} Q${x+4} ${y-5} ${x} ${y+3}Z`,'#a569bd')+C(x,y,3,'#a569bd'),n:L('En flaggermus.','A bat.')}
+};
+const qmarks=(y,col,xs=[172,200,228])=>xs.map(x=>T(x,y,'?',20,col,'font-weight="bold"')).join('');
+
+/* ================= TING I ROMMENE ================= */
+const crate=(b,col,lab)=>b?R(268,540,100,46,'#2a1a0c')+P('M268 540 L300 520 L306 526 L274 548Z',col)+P('M330 528 L372 536 L368 544 L326 536Z',col)+R(268,560,100,26,col,'stroke="#5a3a1c" stroke-width="2"'):R(268,505,100,80,col,'stroke="#5a3a1c" stroke-width="3"')+Ln(268,532,368,532,'#5a3a1c',2)+Ln(268,559,368,559,'#5a3a1c',2)+Ln(275,510,361,580,'#5a3a1c',3)+T(318,552,lab,15,'#3a2210','font-weight="bold"')+[275,361].map(x=>C(x,512,2,'#555')+C(x,578,2,'#555')).join('');
+const desk=(o,lock)=>R(15,498,130,12,'#8b5a2b')+R(20,510,8,78,'#6d4320')+R(132,510,8,78,'#6d4320')+(o?R(38,512,74,30,'#2a1a0c')+R(32,534,86,16,'#a0703e','stroke="#6d4320"')+C(75,542,3,'#333'):R(40,512,70,26,'#a0703e','stroke="#6d4320" stroke-width="2"')+C(75,525,3,'#333')+(lock?R(91,520,7,9,'#c9a227','rx="1"'):''));
+
+/* ================= BANENE ================= */
+const WORLDS=[
+/* ---------- SKOLEN ---------- */
+{id:'school',name:L('Skolen','The School'),mon:'school',light:'#fff7d6',vig:.35,amb:[55,82.5],ambV:.022,peekRate:.035,peek:[[175,268],[225,268]],
+ c:{ceil:'#e4ebe5',side:'#a9c4b2',wall:'#cfe1d3',base:'#3d6b50',fA:'#ece6d6',fB:'#c9bfa8',fl:'#b3a98f',chk:1},
+ d:{f:'#5c3b1e',p:'#a8743f',p2:'#7a4f26',t:'win'},
+ decor(){let s=R(50,312,300,136,'#a9c7b2')+R(50,308,300,5,'#3d6b50')+E(200,24,96,16,'#fffbe0','opacity=".4"')+R(140,16,120,7,'#fffef2','rx="3"')+R(155,40,90,6,'#fffef2','rx="3"');for(const x of [12,24,36])s+=Ln(x,60*x/50+10,x,600-140*x/50-10,'#86a592',1.5)+Ln(400-x,60*x/50+10,400-x,600-140*x/50-10,'#86a592',1.5);return s},
+ intro:n=>L(`${n} ble låst inne på skolen etter at alle andre gikk hjem. Hjelp ${n} ut!`,`${n} got locked in at school after everyone went home. Help ${n} escape!`),
+ levels:[
+  B1({item:'key',h0:L('Plakaten på veggen henger litt rart. Kanskje noe er bak den?','The poster on the wall hangs a bit oddly. Maybe something is behind it?'),
+   spots:[
+    {id:'poster',key:1,kx:104,ky:162,msg:L('Du vippet plakaten til side. Det henger en nøkkel bak den!','You tipped the poster aside. A key is hanging behind it!'),
+     draw:m=>`<g ${rot(m,68,76,115)}>${R(72,112,62,84,'#fff','stroke="#aaa"')}${T(103,133,tx(L('LES!','READ!')),14,'#c0392b','font-weight="bold"')}${R(87,142,32,40,'#3498db')}${R(102,142,2,40,'#fff')}${C(76,115,3,'#e74c3c')}</g>`},
+    {id:'plant',empty:L('Bare jord og en meitemark i potten.','Just soil and an earthworm in the pot.'),
+     draw:m=>`<g ${rot(m,-6,50,585)}>${E(38,520,14,26,'#27ae60')}${E(62,515,13,28,'#2ecc71')}${E(50,505,10,30,'#27ae60')}</g>${P('M28 545 L72 545 L66 588 L34 588Z','#c0703a')}`}],
+   scare:{draw:o=>R(276,165,62,282,o?'#0c0c0c':'#7f8c8d','stroke="#4d5656" stroke-width="2"')+(o?P('M338 165 L364 175 L364 437 L338 447Z','#95a5a6')+C(300,230,3,'#ff3030','class="glow"')+C(313,230,3,'#ff3030','class="glow"'):[0,1,2,3].map(i=>R(290,180+i*7,34,3,'#5f6a6a')).join('')+R(326,290,5,18,'#4d5656','rx="2"')),
+    msg:L('AAAH! Noe stod inni skapet!','AAAH! Something was inside the locker!'),calm:L('Skapet er tomt. Bare en gammel gymsko.','The locker is empty. Just an old gym shoe.'),after:L('Skapet er tomt nå... tror jeg.','The locker is empty now... I think.')}}),
+  B2({cats:[CAT.book,CAT.apple,CAT.pencil],max:5,
+   clue:c=>R(150,80,100,110,'#2d4a3e','stroke="#8b5a2b" stroke-width="5"')+c[0].d(172,112)+c[1].d(200,112)+c[2].d(228,112)+qmarks(152,'#fff')+T(200,177,tx(L('TELL!','COUNT!')),12,'#cfd8d3'),
+   clueMsg:L('På tavla: tell bøker, epler og blyanter. Det blir koden!','On the board: count the books, apples and pencils. That is the code!'),
+   scare:{draw:o=>P('M305 528 L345 528 L340 588 L310 588Z','#7f8c8d')+Ln(318,535,316,582,'#5f6a6a',2)+Ln(332,535,334,582,'#5f6a6a',2)+(o?P('M302 522 L345 500 L348 506 L305 528Z','#95a5a6')+E(325,530,14,4,'#000')+C(320,530,2,'#ff3030')+C(330,530,2,'#ff3030'):R(302,520,46,8,'#95a5a6','rx="3"')),
+    msg:L('Noe hoppet opp av søppelbøtta!','Something jumped out of the trash can!'),calm:L('Bare papir og en gammel matpakke.','Just paper and an old lunch box.'),after:L('Søppelbøtta er stille nå.','The trash can is quiet now.')}}),
+  B3({tool:'hammer',rew:'key',target:'door',tp:[75,522],rp:[318,556],
+   box:o=>desk(o),crate:b=>crate(b,'#b07a43','GYM'),
+   boxMsg:L('Skuffen i lærerpulten gled opp. En hammer!','The teacher’s desk drawer slid open. A hammer!'),
+   crateMsg:L('En spikret kasse merket GYM. Den sitter bom fast.','A nailed crate marked GYM. It is stuck tight.'),
+   smashMsg:L('KRASJ! Kassa knuste. Noe glinser inni!','CRASH! The crate broke. Something shines inside!'),
+   doorMsg:L('Døren er låst. Jeg ser et nøkkelhull.','The door is locked. I can see a keyhole.'),
+   h0:L('Lærerpulten har en skuff.','The teacher’s desk has a drawer.'),h4:L('Velg nøkkelen og trykk på døren.','Select the key and tap the door.'),
+   scare:{draw:o=>Ln(305,140,305,440,'#999',3)+R(285,436,40,6,'#777')+C(305,125,14,'#f5f5f0')+(o?C(299,123,3.5,'#ff2020','class="glow"')+C(311,123,3.5,'#ff2020','class="glow"')+E(305,136,5,5,'#000'):C(299,123,3.5,'#222')+C(311,123,3.5,'#222')+R(299,133,12,4,'#ccc'))+[160,172,184,196].map(y=>E(305,y,16,4,'none','stroke="#f5f5f0" stroke-width="3"')).join('')+Ln(290,150,280,220,'#f5f5f0',3)+Ln(320,150,330,220,'#f5f5f0',3)+Ln(298,210,294,300,'#f5f5f0',3)+Ln(312,210,316,300,'#f5f5f0',3),
+    msg:L('Skjelettet snudde hodet mot deg!','The skeleton turned its head towards you!'),calm:L('Et plastskjelett fra naturfagtimen.','A plastic skeleton from science class.'),after:L('Det er bare plast... ikke sant?','It is just plastic... right?')}}),
+  B4({n:4,h0:L('Over døren er det fire fargede knapper. Se etter et hint i rommet.','Above the door are four colored buttons. Look for a clue in the room.'),h1:L('Ballongene på tegningen viser rekkefølgen, fra venstre mot høyre.','The balloons in the drawing show the order, from left to right.'),
+   clue:st=>st.seen?R(62,100,82,112,'#fffbe6','stroke="#ccc" stroke-width="2"')+C(130,112,7,'#f9ca24')+st.seq.map((c,i)=>Ln(78+i*17,148,82+i*10,200,'#666',1)+E(78+i*17,140,7,9,COL[c].c)).join('')+P('M66 205 Q100 195 140 205','none','stroke="#27ae60" stroke-width="3"'):R(82,128,40,40,'#fffbe6','stroke="#ccc"')+P('M110 128 L122 128 L122 140Z','#e8e2c8')+T(102,154,'?',20,'#aaa'),
+   clueMsg:L('En barnetegning av ballonger. Fargene står i en bestemt rekkefølge...','A child’s drawing of balloons. The colors are in a certain order...'),
+   scare:{draw:o=>R(288,98,50,38,o?'#7a1f1f':'#555','rx="6"')+[0,1,2,3].map(i=>Ln(296,106+i*7,330,106+i*7,'#333',2)).join(''),
+    msg:L('HØYTTALEREN SKREK: «INGEN FÅR GÅ HJEM!»','THE SPEAKER SCREAMED: "NOBODY GOES HOME!"'),calm:L('Høyttaleren knitrer litt.','The speaker crackles a little.'),after:L('Høyttaleren er stille nå.','The speaker is silent now.')}}),
+  B5({part:'fuse',sp:[312,578],pp:[75,522],scarePower:1,
+   a:d=>R(322,580,36,6,'#555')+Ln(340,548,340,580,'#555',4)+P('M318 520 A24 24 0 0 0 362 530','none','stroke="#b8860b" stroke-width="3"')+C(340,524,22,'#2e86de')+(d?P('M330 510 q10 -4 14 6 q-6 8 -14 2Z M345 530 q8 2 6 10 q-8 2 -10 -6Z','#27ae60'):P('M325 515 q10 -6 16 4 q-6 8 -16 2Z M338 532 q10 0 8 10 q-8 3 -12 -6Z','#27ae60')),
+   aMsg:L('Du snurret globusen. En liten nøkkel falt ut!','You spun the globe. A small key fell out!'),
+   dr:o=>desk(o,1),drMsg:L('Skuffen er åpen. Der ligger en sikring!','The drawer is open. There is a fuse!'),drLock:L('Pultskuffen er låst med en liten lås.','The desk drawer has a small lock.'),
+   box:on=>fuseBox(on,70,110),boxMsg:L('Sikringsskapet. Én sikring mangler.','The fuse box. One fuse is missing.'),onMsg:L('Lyset kom tilbake! Men hvem står der...?','The lights came back! But who is standing there...?'),
+   code:(on,c)=>R(150,80,100,110,'#22392f','stroke="#8b5a2b" stroke-width="5"')+(on?T(200,148,c.split('').join(' '),28,'#fff','font-weight="bold"'):''),cdDark:L('Tavla er for mørk til å lese.','The board is too dark to read.'),
+   h0:L('Det er mørkt. Lys rundt med lommelykten og se etter noe som kan snurre.','It is dark. Shine the flashlight around and look for something that can spin.'),h2:L('Bruk den lille nøkkelen på pulten.','Use the small key on the desk.'),h4:L('Sett sikringen i sikringsskapet på veggen.','Put the fuse in the fuse box on the wall.'),h5:L('Les koden på tavla og tast den inn på panelet.','Read the code on the board and enter it on the keypad.')})
+ ]},
+/* ---------- DET ØDE HUSET ---------- */
+{id:'house',name:L('Det øde huset','The Abandoned House'),mon:'house',light:'#ffe0a3',vig:.75,amb:[49,73.4],ambV:.03,peekRate:.05,peek:[[200,452],[72,82],[330,82]],
+ c:{ceil:'#2a211b',side:'#3e3028',wall:'#5b4636',base:'#2a1a10',fA:'#5a3d27',fB:'#4c3220',fl:'#2e1f14',chk:0},
+ d:{f:'#2b1a10',p:'#4a2c18',p2:'#3a2212',t:'old'},
+ decor(){let s='';for(let x=58;x<350;x+=26)s+=R(x,60,11,388,'#523e30');
+  s+=P('M50 60 L95 60 M50 60 L50 105 M50 60 L85 95 M62 60 Q64 72 50 74 M78 60 Q76 86 50 88','none','stroke="#cfc6b8" stroke-width="1" opacity=".45"')+P('M350 60 L305 60 M350 60 L350 105 M350 60 L315 95 M338 60 Q336 72 350 74 M322 60 Q324 86 350 88','none','stroke="#cfc6b8" stroke-width="1" opacity=".45"');
+  s+=Ln(200,0,200,26,'#222',2)+P('M168 30 Q200 46 232 30','none','stroke="#8a6d3b" stroke-width="3"');for(const x of [168,200,232])s+=R(x-2,20,4,10,'#efe6cf')+E(x,17,2,3.5,'#ffb347','class="glow"');
+  return s+P('M258 300 l8 14 l-6 10 l10 18','none','stroke="#2a1d15" stroke-width="1.5"')},
+ intro:n=>L(`${n} gikk inn i det øde huset for å hente en ball... og døren smalt igjen bak deg!`,`${n} went into the abandoned house to get a ball... and the door slammed shut!`),
+ levels:[
+  B1({item:'rkey',h0:L('Kanskje noe er gjemt under teppet?','Maybe something is hidden under the rug?'),
+   spots:[
+    {id:'paint',empty:L('Bak maleriet er det bare spindelvev. Øynene i bildet følger deg...','Behind the painting there is only cobweb. The eyes in the picture follow you...'),
+     draw:m=>`<g ${rot(m,-16,103,100)}>${frame(66,100,74,92,P('M86 124 Q103 102 120 124 L122 176 L84 176Z','#1a0f0a')+E(103,140,15,19,'#d9c2a7')+C(97,137,2.2,'#111')+C(109,137,2.2,'#111')+P('M97 150 Q103 153 109 150','none','stroke="#7a4a3a" stroke-width="1.5"'))}</g>`},
+    {id:'rug',key:1,kx:150,ky:556,msg:L('Du brettet opp teppet. Der lå en rusten nøkkel!','You folded up the rug. There was a rusty key!'),
+     draw:m=>m?P('M40 540 L100 532 L104 574 L44 584Z','#8e2c2c')+P('M100 532 L120 548 L104 574Z','#6b1f1f'):E(110,556,82,24,'#8e2c2c')+E(110,556,66,17,'none','stroke="#d4a017" stroke-width="2"')+E(110,556,30,8,'none','stroke="#d4a017" stroke-width="1.5"')}],
+   scare:{draw:o=>R(266,150,74,298,'#3a2212','stroke="#1e110a" stroke-width="3"')+P('M262 150 L344 150 L338 136 L268 136Z','#4a2c18')+(o?R(303,152,35,294,'#070303')+P('M338 152 L364 162 L364 438 L338 446Z','#4a2c18')+P('M306 226 Q320 206 334 226 L336 272 L304 272Z','#0a0a0a')+E(320,238,11,15,'#e8eef0')+E(316,234,2.5,3.5,'#000')+E(324,234,2.5,3.5,'#000')+E(320,245,2.5,4,'#000'):Ln(303,152,303,446,'#1e110a',2)+C(298,300,3,'#c9a227')+C(308,300,3,'#c9a227')),
+    msg:L('Noe hvitt sprang ut av klesskapet!','Something white leapt out of the wardrobe!'),calm:L('Klesskapet er fullt av gamle kjoler.','The wardrobe is full of old dresses.'),after:L('Bare gamle kjoler nå...','Just old dresses now...')}}),
+  B2({cats:[CAT.candle,CAT.spider,CAT.bottle],max:6,
+   clue:c=>E(200,135,46,56,'#b8860b')+E(200,135,40,50,'#a7b7bb')+E(186,116,10,14,'#fff','opacity=".25"')+c[0].d(178,118)+c[1].d(200,118)+c[2].d(222,118)+qmarks(160,'#6b2a2a',[178,200,222]),
+   clueMsg:L('Noen har skrevet i duggen på speilet: tell lys, edderkopper og flasker.','Someone wrote in the mist on the mirror: count candles, spiders and bottles.'),
+   scare:{sfx:'whisper',draw:o=>`<g ${rot(o,-8,340,585)}>${P('M300 586 Q340 596 384 580','none','stroke="#4a2c18" stroke-width="5"')}${Ln(312,586,316,530,'#4a2c18',5)}${Ln(370,584,366,530,'#4a2c18',5)}${R(306,524,66,10,'#5a3a20')}${R(352,470,12,58,'#5a3a20')}${R(312,470,10,58,'#5a3a20')}${R(312,470,52,8,'#5a3a20')}${o?E(340,505,16,22,'#e8eef0','opacity=".75"')+E(335,498,2,3,'#000')+E(345,498,2,3,'#000'):''}</g>`,
+    msg:L('Gyngestolen begynte å gynge av seg selv!','The rocking chair started rocking by itself!'),calm:L('En gammel gyngestol.','An old rocking chair.'),after:L('Gyngestolen gynger fortsatt litt...','The rocking chair is still rocking a little...')}}),
+  B3({tool:'crowbar',rew:'handle',target:'handle',tp:[100,424],rp:[318,556],
+   box:o=>R(56,352,88,96,'#6e6259','stroke="#4a403a" stroke-width="2"')+R(50,346,100,10,'#4a403a')+P('M72 448 L72 392 Q100 366 128 392 L128 448Z','#140c08')+(o?E(100,442,26,5,'#555')+C(86,440,2,'#ff6b2b','class="glow"')+C(112,441,2,'#ff6b2b','class="glow"'):E(100,438,24,8,'#8a8a8a')+E(96,434,10,4,'#9a9a9a'))+[[58,360],[98,358],[130,380],[58,410]].map(([a,b])=>R(a,b,14,8,'#5e534b')).join(''),
+   crate:b=>crate(b,'#6b4a2a','X'),
+   boxMsg:L('Du rotet i asken i peisen og fant et brekkjern!','You dug in the fireplace ashes and found a crowbar!'),
+   crateMsg:L('Kassa er spikret igjen. Et verktøy hadde hjulpet.','The crate is nailed shut. A tool would help.'),
+   smashMsg:L('Du brakk opp lokket! Det ligger et dørhåndtak inni.','You pried the lid open! There is a door handle inside.'),
+   doorMsg:L('Døren har ikke noe håndtak! Bare et tomt hull.','The door has no handle! Just an empty hole.'),
+   h0:L('Peisen er full av aske. Kanskje noe er gjemt der?','The fireplace is full of ashes. Maybe something is hidden there?'),h4:L('Velg dørhåndtaket og trykk på døren.','Select the door handle and tap the door.'),
+   scare:{draw:o=>frame(270,100,68,90,P('M288 124 Q304 104 320 124 L322 178 L286 178Z','#1a0f0a')+E(304,140,14,18,o?'#e8eef0':'#e0c3a5')+(o?E(299,136,3,4,'#000')+E(309,136,3,4,'#000')+E(304,151,4,7,'#000'):C(299,137,2,'#111')+C(309,137,2,'#111')+P('M299 149 Q304 152 309 149','none','stroke="#7a4a3a" stroke-width="1.5"'))),
+    msg:L('Damen i maleriet SKREK!','The lady in the painting SCREAMED!'),calm:L('Et maleri av en streng gammel dame.','A painting of a stern old lady.'),after:L('Hun ser fortsatt på meg...','She is still looking at me...')}}),
+  B4({n:5,h0:L('Vinduet til venstre er støvete. Trykk på det.','The window on the left is dusty. Tap it.'),h1:L('Trykk knappene over døren i samme rekkefølge som fargene i vinduet, ovenfra og ned.','Press the buttons above the door in the same order as the colors in the window, top to bottom.'),
+   clue:st=>P('M66 232 L66 122 Q102 82 138 122 L138 232Z','#1e1a22','stroke="#3a2a1a" stroke-width="5"')+st.seq.map((c,i)=>R(72,128+i*20,60,17,st.seen?COL[c].c:'#7b776c')).join('')+(st.seen?'':T(102,112,'~ ~ ~',10,'#9a9488'))+Ln(102,100,102,232,'#3a2a1a',3),
+   clueMsg:L('Du tørket bort støvet. Glassbitene har farger, ovenfra og ned.','You wiped away the dust. The glass panes have colors, top to bottom.'),
+   scare:{sfx:'mbox',delay:1400,draw:o=>R(300,545,70,38,'#6b3e26','stroke="#3a2212" stroke-width="2"')+P('M300 545 L312 512 L382 512 L370 545Z','#7a4a2e')+Ln(335,545,335,528,'#ccc',1.5)+C(335,524,4,o?'#e8eef0':'#f5c6d0')+P('M329 530 L341 530 L335 538Z','#f5c6d0'),
+    msg:L('Spilledåsen begynte å spille... og noe stod rett bak deg!','The music box started playing... and something was right behind you!'),calm:L('En gammel spilledåse spiller en trist melodi.','An old music box plays a sad tune.'),after:L('Spilledåsen spiller igjen av seg selv...','The music box plays again by itself...')}}),
+  B5({part:'fuse',sp:[300,566],pp:[73,488],scarePower:1,chase:150,
+   a:d=>E(330,528,42,9,'#5a3a1c')+R(326,528,8,52,'#4a2c14')+E(330,582,20,5,'#4a2c14')+E(330,508,17,14,'#ecf0f1','stroke="#bbb"')+P('M346 506 Q358 498 360 490','none','stroke="#ecf0f1" stroke-width="4"')+P('M314 502 Q304 506 312 516','none','stroke="#ecf0f1" stroke-width="3"')+(d?E(354,522,6,2.5,'#dfe6e9'):E(330,494,7,3,'#dfe6e9')+C(330,490,2.5,'#dfe6e9')),
+   aMsg:L('Det lå en liten nøkkel i tekanna!','There was a small key in the teapot!'),
+   dr:o=>R(18,468,110,117,'#4a2c18','stroke="#2a1a0c" stroke-width="2"')+(o?R(12,474,122,28,'#6b3e26')+R(18,478,110,18,'#1a0f08'):R(24,476,98,28,'#5a3820')+R(70,484,7,9,'#c9a227','rx="1"'))+R(24,512,98,30,'#5a3820')+R(24,548,98,30,'#5a3820')+C(73,527,3,'#c9a227')+C(73,563,3,'#c9a227'),
+   drMsg:L('Kommoden er åpen. En gammel sikring!','The dresser is open. An old fuse!'),drLock:L('Den øverste skuffen er låst.','The top drawer is locked.'),
+   box:on=>fuseBox(on,276,110),boxMsg:L('Et rustent sikringsskap. Én sikring mangler.','A rusty fuse box. One fuse is missing.'),onMsg:L('Lyset kom på! Og spøkelset var rett ved siden av deg!','The lights came on! And the ghost was right next to you!'),
+   code:(on,c)=>frame(154,82,92,104,on?T(200,140,c.split('').join(' '),24,'#ffe08a','font-weight="bold"')+T(200,168,'☾',16,'#ffe08a'):''),cdDark:L('Maleriet er helt svart i mørket.','The painting is all black in the dark.'),
+   h0:L('Det er mørkt, og spøkelset kommer! Lys rundt og se i tekanna.','It is dark and the ghost is coming! Shine around and look in the teapot.'),h2:L('Bruk den lille nøkkelen på kommoden.','Use the small key on the dresser.'),h4:L('Sett sikringen i sikringsskapet til høyre.','Put the fuse in the fuse box on the right.'),h5:L('Maleriet over døren viser koden nå. Tast den inn!','The painting above the door shows the code now. Enter it!')})
+ ]},
+/* ---------- KJØPESENTERET ---------- */
+{id:'mall',name:L('Kjøpesenteret','The Mall'),mon:'mall',light:'#e6f7ff',vig:.28,amb:[61.7,92.5],ambV:.02,peekRate:.04,peek:[[200,300],[25,230],[375,230]],
+ c:{ceil:'#f4f4f8',side:'#d9d4e6',wall:'#ecebf3',base:'#7d6fa8',fA:'#e3e7ee',fB:'#cfd6e2',fl:'#b8c0cc',chk:1},
+ d:{f:'#5a5f6b',p:'#bfe6f2',p2:'#5a5f6b',t:'glass'},
+ decor(){let s='';for(let y=100;y<448;y+=40)s+=Ln(50,y,350,y,'#d9d5e6',1);for(let x=90;x<350;x+=40)s+=Ln(x,78,x,448,'#e2deee',1);
+  s+=R(50,60,300,18,'#7d6fa8')+T(200,73,tx(L('KJØPESENTERET','THE MALL')),11,'#fff','font-weight="bold" letter-spacing="3"');
+  for(const x of [110,200,290])s+=E(x,30,22,8,'#fff','opacity=".5"')+C(x,30,5,'#fffde8');
+  return s+P('M6 110 L44 140 L44 330 L6 365Z','#ffd3e6','opacity=".8"')+P('M394 110 L356 140 L356 330 L394 365Z','#cfe6ff','opacity=".8"')},
+ intro:n=>L(`Kjøpesenteret har stengt, og ${n} er fortsatt inne. Lysene blinker...`,`The mall has closed, and ${n} is still inside. The lights are flickering...`),
+ levels:[
+  B1({item:'key',h0:L('Den store palmen står litt skjevt...','The big palm tree is standing a bit crooked...'),
+   spots:[
+    {id:'palm',key:1,kx:96,ky:574,msg:L('Du vippet potten. Under den lå en nøkkel!','You tipped the pot. There was a key under it!'),
+     draw:m=>`<g ${rot(m,-24,32,586)}>${P('M30 540 L82 540 L76 586 L36 586Z','#ecf0f1','stroke="#bdc3c7"')}${Ln(56,540,56,500,'#8b5a2b',5)}${P('M56 500 Q30 480 14 500 Q34 488 56 500Z M56 500 Q60 470 40 452 Q66 466 56 500Z M56 500 Q84 470 100 488 Q76 482 56 500Z M56 500 Q86 500 98 520 Q76 502 56 500Z','#27ae60')}</g>`},
+    {id:'sale',empty:L('Bare et salgsskilt. 50 % på alt!','Just a sale sign. 50% off everything!'),
+     draw:m=>`<g ${m?'transform="translate(0 34) rotate(22 104 144)"':''}>${R(72,118,64,50,'#e74c3c','rx="4"')}${T(104,140,tx(L('SALG','SALE')),15,'#fff','font-weight="bold"')}${T(104,160,'-50%',13,'#fff')}</g>`}],
+   scare:{draw:o=>R(262,148,82,14,'#7d6fa8')+T(303,159,tx(L('PRØVEROM','FITTING ROOM')),8,'#fff','font-weight="bold"')+R(266,164,74,4,'#888')+(o?R(266,168,60,278,'#1c1a24')+E(296,240,14,18,'#e3c9a8')+C(290,236,2.5,'#e00','class="glow"')+C(302,236,2.5,'#e00','class="glow"')+P('M282 258 L310 258 L318 330 L274 330Z','#2c3e50')+P('M326 168 Q334 300 326 446 L342 446 L340 168Z','#c0392b'):P('M266 168 L340 168 L340 446 L266 446Z','#c0392b')+[280,295,310,325].map(x=>Ln(x,170,x+2,444,'#962d22',2)).join('')),
+    msg:L('En mannekeng stod bak forhenget og STIRRET!','A mannequin stood behind the curtain and STARED!'),calm:L('Prøverommet er tomt.','The fitting room is empty.'),after:L('Mannekengen står helt stille... gjorde den det i stad også?','The mannequin stands completely still... was it like that before?')}}),
+  B2({cats:[CAT.bag,CAT.balloon,CAT.star],max:6,
+   clue:c=>R(152,82,96,104,'#0d0d0d','rx="4" stroke="#555" stroke-width="4"')+c[0].d(174,116)+c[1].d(200,116)+c[2].d(226,116)+qmarks(160,'#2ecc71',[174,200,226]),
+   clueMsg:L('Skjermen viser: handleposer, ballonger og stjerner = ? ? ?','The screen shows: shopping bags, balloons and stars = ? ? ?'),
+   scare:{draw:o=>R(298,470,80,118,'#e84393','rx="6"')+R(306,478,64,56,'#bfe6f2','opacity=".85"')+C(320,524,7,'#fdcb6e')+C(338,526,7,'#74b9ff')+C(354,523,7,'#a29bfe')+Ln(338,478,338,o?498:490,'#555',2)+(o?C(338,506,8,'#f5d6c6')+C(335,504,1.6,'#000')+C(341,504,1.6,'#000'):P('M332 490 L338 498 L344 490','none','stroke="#555" stroke-width="2"'))+R(320,548,36,10,'#2d3436','rx="2"')+C(316,570,5,'#e74c3c'),
+    msg:L('Klokrana grep et dukkehode... som blunket til deg!','The claw machine grabbed a doll head... that winked at you!'),calm:L('En klokran full av kosedyr.','A claw machine full of plushies.'),after:L('Dukkehodet henger der fortsatt.','The doll head is still hanging there.')}}),
+  B3({tool:'hammer',rew:'card',target:'reader',tp:[53,478],rp:[318,520],
+   box:o=>R(18,532,108,8,'#7f8c8d')+Ln(24,540,24,582,'#7f8c8d',3)+Ln(120,540,120,582,'#7f8c8d',3)+C(26,584,5,'#333')+C(118,584,5,'#333')+P('M30 532 L36 494 L70 494 L76 532Z','#3498db')+E(53,494,17,4,o?'#1a5276':'#5dade2')+Ln(100,456,108,532,'#c8a165',3)+P('M98 532 Q108 548 120 532Z','#ddd')+R(84,508,32,24,'#f1c40f','rx="2"'),
+   crate:b=>R(270,545,96,40,'#7f8c8d')+R(266,540,104,8,'#95a5a6')+(b?P('M274 540 L284 512 L292 540Z M330 540 L340 506 L352 540Z','#bfe6f2','opacity=".7"')+P('M296 560 l6 -4 l2 6Z M340 566 l8 -3 l2 7Z','#bfe6f2'):R(274,500,88,40,'#bfe6f2','opacity=".55" stroke="#95a5a6" stroke-width="2"')+itemAt('card',318,520,.65)+Ln(282,506,296,530,'#fff',1.5,'opacity=".7"')),
+   boxMsg:L('Du lette i vaskevogna og fant en hammer!','You searched the cleaning cart and found a hammer!'),
+   crateMsg:L('Et låst glassmonter. Det ligger et nøkkelkort inni!','A locked glass display. There is a key card inside!'),
+   smashMsg:L('KLIRR! Glasset knuste.','SMASH! The glass broke.'),
+   doorMsg:L('Døren er låst. Det er en kortleser ved siden av.','The door is locked. There is a card reader next to it.'),
+   h0:L('Vaskevogna kan ha noe nyttig.','The cleaning cart might have something useful.'),h4:L('Velg nøkkelkortet og trykk på kortleseren ved døren.','Select the key card and tap the card reader by the door.'),
+   scare:{draw:o=>R(274,104,68,52,'#111','rx="4"')+R(279,109,58,42,o?'#ddd':'#6c7a89')+(o?E(308,130,12,15,'#111')+C(303,126,2.5,'#f00')+C(313,126,2.5,'#f00')+E(308,138,4,5,'#600'):[114,122,130,138,146].map(y=>Ln(281,y,335,y,'#95a5a6',1.5)).join(''))+Ln(308,156,308,166,'#111',3),
+    msg:L('TV-en viste plutselig et ansikt som skrek!','The TV suddenly showed a screaming face!'),calm:L('TV-en viser bare snø.','The TV only shows static.'),after:L('Bare snø igjen... puh.','Just static again... phew.')}}),
+  B4({n:5,simon:1,h0:L('Trykk på neonskiltet og se hvilke farger det blinker.','Tap the neon sign and watch which colors it flashes.'),h1:L('Trykk knappene over døren i samme rekkefølge som skiltet blinket. Trykk på skiltet for å se igjen.','Press the buttons above the door in the order the sign flashed. Tap the sign to watch again.'),
+   clue:st=>(st.cf>=0?R(54,94,96,86,COL[st.cf].c,'rx="14" opacity=".35"'):'')+R(60,100,84,74,'#14142b','rx="10" stroke="#444" stroke-width="3"')+R(68,108,68,58,st.cf>=0?COL[st.cf].c:'#2a2050','rx="6"')+T(102,143,tx(L('ÅPENT','OPEN')),17,st.cf>=0?'#fff':'#8e7cff','font-weight="bold"'),
+   clueMsg:L('Neonskiltet blinker i en rekkefølge. Følg med!','The neon sign flashes in an order. Watch closely!'),
+   scare:{draw:o=>Ln(330,500,330,580,'#888',3)+R(312,580,36,6,'#777')+P('M314 426 L346 426 L352 500 L308 500Z','#2c3e50')+R(326,412,8,14,'#e3c9a8')+E(o?336:330,400,12,15,'#e3c9a8')+(o?C(332,398,2.5,'#e00','class="glow"')+C(341,398,2.5,'#e00','class="glow"')+E(337,408,3,2,'#600'):''),
+    msg:L('Mannekengen snudde hodet og hveste!','The mannequin turned its head and hissed!'),calm:L('En mannekeng i fin jakke.','A mannequin in a nice jacket.'),after:L('Den ser fortsatt på meg.','It is still looking at me.')}}),
+  B5({part:'battery',sp:[44,548],pp:[321,522],scarePower:1,
+   a:d=>E(85,564,66,22,'#bdc3c7')+E(85,560,56,16,'#74b9ff')+R(81,520,8,40,'#bdc3c7')+P('M85 520 Q70 510 64 540 M85 520 Q100 510 106 540','none','stroke="#a8e0ff" stroke-width="2"')+[[60,562],[95,566],[110,558],[70,568]].map(([x,y])=>E(x,y,3,1.6,'#f1c40f')).join('')+(d?E(85,560,40,10,'none','stroke="#fff" opacity=".5"'):''),
+   aMsg:L('Blant myntene i fontenen lå en liten nøkkel!','Among the coins in the fountain was a small key!'),
+   dr:o=>R(258,510,124,76,'#dfe6e9','stroke="#b2bec3" stroke-width="2"')+R(290,478,62,32,'#636e72','rx="3"')+R(296,483,30,12,'#2d3436')+(o?R(284,512,74,18,'#b2bec3','stroke="#7f8c8d"')+R(290,514,62,10,'#1e272e'):R(290,512,62,10,'#95a5a6')+R(318,513,7,8,'#c9a227','rx="1"')),
+   drMsg:L('Kasseskuffen spratt ut. Et stort batteri!','The cash drawer popped out. A big battery!'),drLock:L('Kasseapparatet er låst.','The cash register is locked.'),
+   box:on=>R(68,110,68,54,'#ecf0f1','rx="4" stroke="#95a5a6" stroke-width="2"')+R(68,110,68,12,'#27ae60','rx="4"')+T(102,120,tx(L('NØDLYS','EMERGENCY')),8,'#fff','font-weight="bold"')+R(78,128,48,14,on?'#fff59d':'#555','rx="3"')+(on?E(102,135,44,20,'#fff59d','opacity=".3"'):'')+R(92,148,20,10,on?'#2d3436':'#111','stroke="#999"'),
+   boxMsg:L('Nødlyset mangler batteri.','The emergency light needs a battery.'),onMsg:L('Nødlyset tente! Men noe beveget seg i hjørnet...','The emergency light came on! But something moved in the corner...'),
+   code:(on,c)=>R(152,82,96,104,'#0d0d0d','rx="4" stroke="#555" stroke-width="4"')+(on?T(200,116,tx(L('KODE','CODE')),12,'#2ecc71')+T(200,152,c,28,'#2ecc71','font-weight="bold" letter-spacing="3"'):''),cdDark:L('Skjermen er svart. Ingen strøm.','The screen is black. No power.'),
+   h0:L('Strømmen er gått! Lys rundt med lommelykten. Kanskje noen har mistet noe i fontenen?','The power is out! Shine the flashlight around. Maybe someone dropped something in the fountain?'),h2:L('Bruk den lille nøkkelen på kasseapparatet.','Use the small key on the cash register.'),h4:L('Sett batteriet i nødlyset på veggen.','Put the battery in the emergency light on the wall.'),h5:L('Skjermen over døren viser koden. Tast den inn!','The screen above the door shows the code. Enter it!')})
+ ]},
+/* ---------- MARERITTET ---------- */
+{id:'nightmare',name:L('Marerittet','The Nightmare'),mon:'nightmare',light:'#ffd0d0',vig:.85,amb:[41.2,43.6],ambV:.04,peekRate:.08,peek:[[120,250],[300,250],[200,444],[25,300]],
+ c:{ceil:'#0b0408',side:'#1d0814',wall:'#2b0d1c',base:'#120309',fA:'#1a0610',fB:'#240913',fl:'#3a0a1a',chk:0},
+ d:{f:'#4a0d1a',p:'#7a1428',p2:'#5e0f1f',t:'teeth'},
+ decor(){let s=R(50,60,300,400,'#ff0033','class="pulse" opacity="0"');
+  s+=P('M50 140 Q120 160 140 120 T230 100 M350 220 Q300 240 280 300 T300 420 M60 380 Q100 350 130 400','none','stroke="#6b1029" stroke-width="2.5" opacity=".8"');
+  for(const x of [80,128,270,322])s+=P(`M${x-4} 60 Q${x} 82 ${x+4} 60Z`,'#8a0f2a')+E(x,84+(x%7),2.5,4,'#8a0f2a');
+  return s+E(24,260,9,5,'#eee')+C(24,260,3,'#c0392b')+E(378,320,9,5,'#eee')+C(378,320,3,'#c0392b')+P('M120 470 l30 40 l-10 30 l40 50 M300 480 l-20 30 l30 40','none','stroke="#ff2a4a" stroke-width="1.5" opacity=".45"')},
+ intro:n=>L(`${n} har havnet i et mareritt. Noe jager deg. Finn veien ut før det tar deg!`,`${n} is trapped in a nightmare. Something is chasing you. Find the way out before it gets you!`),
+ levels:[
+  B1({item:'key',h0:L('Bamsen virker rar. Trykk på den flere ganger – eller rist mobilen!','The teddy seems weird. Tap it several times – or shake your phone!'),
+   spots:[
+    {id:'teddy',key:1,taps:3,kx:124,ky:568,tapMsg:L('Bamsen rister... (trykk igjen eller rist mobilen)','The teddy shakes... (tap again or shake your phone)'),msg:L('Bamsen spyttet ut en nøkkel! Ekkelt...','The teddy spat out a key! Gross...'),
+     draw:m=>E(80,556,28,26,'#8d6e63')+C(64,500,7,'#8d6e63')+C(96,500,7,'#8d6e63')+C(80,516,20,'#8d6e63')+E(80,524,8,6,'#bcaaa4')+(m?E(80,528,6,5,'#300')+C(73,512,3,'#111')+C(88,516,2,'#e00')+Ln(88,516,90,528,'#111',1):C(73,512,3,'#111')+C(87,512,3,'#111')+C(80,521,2,'#3e2723'))+P('M66 556 l6 4 l-6 4 M94 556 l-6 4 l6 4','none','stroke="#3e2723" stroke-width="1.5"')},
+    {id:'doll',empty:L('Dukkehodet snurret rundt. Ekkelt, men ingen nøkkel.','The doll’s head spun around. Creepy, but no key.'),
+     draw:m=>R(64,190,80,5,'#3a1020')+P('M96 170 L112 170 L118 190 L90 190Z','#8a1c2b')+`<g ${rot(m,170,104,158)}>${C(104,158,11,'#f0d9c9')}${C(100,156,1.8,'#000')}${C(108,156,1.8,'#000')}${P('M94 152 Q104 140 114 152','none','stroke="#3a1a0a" stroke-width="4"')}</g>`}],
+   scare:{draw:o=>R(250,520,140,40,'#4a0d1a')+R(250,500,24,60,'#3a0a14')+E(285,515,16,8,'#d5c8c8')+P('M290 518 Q330 505 388 520 L388 545 L290 545Z','#2c2c54')+R(254,560,6,26,'#3a0a14')+R(380,560,6,26,'#3a0a14')+(o?R(262,560,118,26,'#000')+C(300,572,2.5,'#f00','class="glow"')+C(312,572,2.5,'#f00','class="glow"')+P('M330 586 l6 -14 l4 10 l4 -12 l3 14','none','stroke="#555" stroke-width="2"'):R(262,560,118,26,'#120308')),
+    msg:L('Noe lå under senga og grep etter deg!','Something under the bed grabbed for you!'),calm:L('Under senga er det bare støvdotter.','Under the bed are only dust bunnies.'),after:L('Jeg ser ikke under senga igjen...','I am not looking under the bed again...')}}),
+  B2({cats:[CAT.eye,CAT.moon,CAT.bat],max:7,dark:1,
+   clue:c=>[172,200,228].map((x,i)=>c[i].d(x,116)).join('')+qmarks(156,'#ff2a4a')+P('M160 176 Q200 186 240 176','none','stroke="#ff2a4a" stroke-width="2"'),
+   clueMsg:L('Skriblet i rødt: tell øyne, måner og flaggermus.','Scrawled in red: count eyes, moons and bats.'),
+   scare:{draw:o=>R(300,540,62,46,'#6c3483','stroke="#3b1a4a" stroke-width="2"')+T(331,570,'?',20,'#f1c40f','font-weight="bold"')+Ln(362,556,374,550,'#aaa',3)+(o?P('M331 540 l-8 -8 l16 -8 l-16 -8 l16 -8','none','stroke="#bbb" stroke-width="2"')+C(331,494,16,'#f5f5f5')+C(325,490,3,'#000')+C(337,490,3,'#000')+P('M321 499 Q331 510 341 499','#c0392b')+C(331,494,4,'#e74c3c'):P('M298 540 L364 540 L360 532 L302 532Z','#8e44ad')),
+    msg:L('Skrinet spratt opp! HAHAHA!','The box sprang open! HAHAHA!'),calm:L('Et leketøyskrin med sveiv.','A toy box with a crank.'),after:L('Den ler fortsatt stille...','It is still laughing quietly...')}}),
+  B3({tool:'crowbar',rew:'key',target:'door',tp:[76,508],rp:[318,560],chase:120,
+   box:o=>R(20,524,112,62,'#c0392b','stroke="#7b241c" stroke-width="2"')+(o?P('M20 524 L30 492 L142 492 L132 524Z','#a93226')+R(24,526,104,10,'#1a0505'):R(16,516,120,10,'#a93226'))+[[40,'A','#f1c40f'],[76,'B','#3498db'],[112,'C','#2ecc71']].map(([x,l,c])=>R(x-12,544,24,24,c)+T(x,562,l,16,'#fff','font-weight="bold"')).join(''),
+   crate:b=>b?R(262,540,110,46,'#111','stroke="#444" stroke-width="2"')+P('M262 540 L280 508 L376 520 L372 540Z','#1c1c1c','stroke="#444"')+P('M266 586 Q300 570 330 588','none','stroke="#777" stroke-width="3" stroke-dasharray="5 3"'):R(262,505,110,80,'#1c1c1c','stroke="#444" stroke-width="2"')+Ln(262,505,372,585,'#888',3,'stroke-dasharray="6 3"')+Ln(372,505,262,585,'#888',3,'stroke-dasharray="6 3"')+R(309,536,18,18,'#b7950b','rx="3"')+P('M312 536 Q318 524 324 536','none','stroke="#b7950b" stroke-width="3"'),
+   boxMsg:L('I lekekassa lå et brekkjern!','There was a crowbar in the toy box!'),
+   crateMsg:L('En kiste med lenker. Den rister innenfra!','A chest with chains. It is shaking from inside!'),
+   smashMsg:L('Du brakk opp kista. Det lå en nøkkel der!','You broke the chest open. There was a key!'),
+   doorMsg:L('Døren er låst. Den knurrer.','The door is locked. It growls.'),
+   h0:L('Skynd deg! Se i lekekassa.','Hurry! Look in the toy box.'),h4:L('Velg nøkkelen og trykk på døren – fort!','Select the key and tap the door – quickly!'),
+   scare:{draw:o=>E(308,150,28,42,'#4a0d1a')+E(308,150,23,37,o?'#100':'#8395a7')+(o?C(300,144,3,'#f00','class="glow"')+C(316,144,3,'#f00','class="glow"')+P('M294 160 Q308 176 322 160 Q308 168 294 160Z','#fff'):P('M296 128 l10 14 l-6 10 l12 18','none','stroke="#dfe6e9" stroke-width="1.2"')),
+    msg:L('Speilbildet ditt smilte... men det gjorde ikke du!','Your reflection smiled... but you did not!'),calm:L('Et sprukket speil.','A cracked mirror.'),after:L('Ikke se i speilet igjen.','Do not look in the mirror again.')}}),
+  B4({n:6,simon:1,chase:110,h0:L('Øynene i veggen til venstre... trykk på dem!','The eyes in the wall on the left... tap them!'),h1:L('Trykk knappene i samme rekkefølge som øynene blinket. Trykk på øynene for å se igjen.','Press the buttons in the order the eyes flashed. Tap the eyes to watch again.'),
+   clue:st=>E(102,150,42,54,'#14040a','stroke="#5a0f22" stroke-width="3"')+[86,118].map(x=>E(x,136,11,13,st.cf>=0?COL[st.cf].c:'#3a0a14')+C(x,136,3,'#000')).join('')+P('M80 174 Q102 190 124 174','none','stroke="#5a0f22" stroke-width="3"')+[86,94,102,110,118].map(x=>Ln(x,172,x,186,'#5a0f22',2)).join(''),
+   clueMsg:L('Øynene i veggen blinker i farger. Følg med!','The eyes in the wall flash colors. Watch closely!'),
+   scare:{draw:o=>`<g ${rot(o,10,340,586)}>${P('M292 584 Q340 600 388 580','none','stroke="#5e0f1f" stroke-width="5"')}${Ln(310,584,320,548,'#5e0f1f',4)}${Ln(370,584,360,548,'#5e0f1f',4)}${E(340,540,32,13,'#7a1428')}${P('M368 540 L380 506 L394 512 L384 540Z','#7a1428')}${C(386,512,2.5,o?'#f00':'#111')}</g>`,
+    msg:L('Gyngehesten vrinsket og stirret med røde øyne!','The rocking horse neighed and stared with red eyes!'),calm:L('En gammel gyngehest.','An old rocking horse.'),after:L('Den gynger av seg selv...','It is rocking by itself...')}}),
+  B5({part:'bulb',sp:[300,574],pp:[66,520],scarePower:1,chase:170,
+   a:d=>P('M284 512 L332 472 L380 512Z','#5e0f1f')+R(290,512,84,74,d?'#1a0610':'#7a1428')+(d?C(312,540,5,'#f0d9c9')+C(348,540,5,'#f0d9c9')+C(310,539,1,'#000')+C(314,539,1,'#000')+C(346,539,1,'#000')+C(350,539,1,'#000')+R(306,546,12,16,'#8a1c2b')+R(342,546,12,16,'#2c2c54'):R(300,524,20,18,'#f9e79f','opacity=".6"')+R(344,524,20,18,'#f9e79f','opacity=".6"')+R(322,556,20,30,'#3a0a14')),
+   aMsg:L('I dukkehuset lå en liten nøkkel. Dukkene har snudd seg mot deg...','In the dollhouse was a small key. The dolls have turned towards you...'),
+   dr:o=>R(20,500,92,86,'#3a1020','stroke="#1a0610" stroke-width="2"')+(o?R(14,506,104,26,'#4a1428')+R(20,510,92,14,'#0a0204'):R(26,508,80,24,'#4a1428')+R(62,514,7,9,'#b7950b','rx="1"'))+R(26,540,80,36,'#4a1428')+R(40,470,10,30,'#888')+E(45,470,16,8,'#5a1a2a'),
+   drMsg:L('Nattbordskuffen er åpen. En lyspære!','The nightstand drawer is open. A light bulb!'),drLock:L('Nattbordet er låst.','The nightstand is locked.'),
+   box:on=>R(96,108,14,10,'#555')+P('M80 118 L126 118 L116 142 L90 142Z',on?'#f9e79f':'#3a1020','stroke="#111"')+C(103,148,7,on?'#fffde0':'#222','stroke="#555"')+(on?E(103,170,56,40,'#fff59d','opacity=".18"'):''),
+   boxMsg:L('Vegglampen mangler lyspære.','The wall lamp has no light bulb.'),onMsg:L('Lyset er på! Mørket trekker seg tilbake... nesten.','The light is on! The darkness backs away... almost.'),
+   code:(on,c)=>on?T(200,140,c.split('').join(' '),30,'#ff4d6d','font-weight="bold" stroke="#300" stroke-width="1"')+T(200,170,tx(L('SLIPP UT!','LET ME OUT!')),11,'#ff4d6d'):'',cdDark:L('Det er noe skrevet på veggen, men det er for mørkt.','Something is written on the wall, but it is too dark.'),
+   h0:L('Mørkt og monsteret kommer! Lys på dukkehuset.','Dark and the monster is coming! Shine on the dollhouse.'),h2:L('Bruk den lille nøkkelen på nattbordet.','Use the small key on the nightstand.'),h4:L('Sett lyspæra i vegglampen til venstre.','Put the bulb in the wall lamp on the left.'),h5:L('Koden står på veggen over døren. Tast den inn – fort!','The code is on the wall above the door. Enter it – fast!')})
+ ]}
+];
+
+/* ================= SPILLMOTOR ================= */
+let G=null;
+function later(fn,ms){const g=G;if(!g)return;g.timers.push(setTimeout(()=>{if(G===g)fn()},ms))}
+function say(o){const m=$('#msg');if(!m)return;m.innerHTML=`<span class="av">${heroSVG(S.hero)}</span><span class="tx">${tx(o)}</span>`;m.classList.remove('pop');void m.offsetWidth;m.classList.add('pop')}
+function give(id){G.inv.push(id);SFX.pick();say(L(`${UI.no.found}: ${ITEMS[id].no}!`,`${UI.en.found}: ${ITEMS[id].en}!`));drawInv()}
+function use(id){const i=G.inv.indexOf(id);if(i>=0)G.inv.splice(i,1);G.sel=null;drawInv()}
+function shakeScreen(){const s=$('#stage');if(!s)return;s.classList.remove('shakeScreen');void s.offsetWidth;s.classList.add('shakeScreen')}
+function scare(force){if(!S.scary&&!force)return false;const el=$('#scare');el.innerHTML=`<svg viewBox="0 0 200 200">${MON[G?G.world.mon:'school']}</svg>`;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');SFX.scare();try{navigator.vibrate&&navigator.vibrate([200,60,250])}catch(e){}const g=G;if(g)g.busy=true;setTimeout(()=>{el.classList.remove('on');if(g)g.busy=false},1050);return true}
+function openDoor(){if(G.open)return;G.open=true;G.anim=true;G.peek=null;SFX.unlock();later(()=>SFX.door(),300);S.prog[G.w]=Math.max(S.prog[G.w],G.l+1);save();say('enter');const c=$('#chase');if(c)c.hidden=true;drawScene();G.anim=false}
+function drawInv(){const el=$('#inv');if(!el||!G)return;el.innerHTML=Array.from({length:6},(_,i)=>{const id=G.inv[i];return `<button class="slot ${id&&G.sel===id?'sel':''}" data-i="${i}">${id?`<svg viewBox="0 0 40 40">${ICON[id]}</svg>`:''}</button>`}).join('')}
+function drawScene(){if(!G)return;const svg=$('#scene');if(!svg)return;const th=G.world,lv=G.lv,st=G.st;
+ let s=defs(th)+room(th)+doorSVG(th)+lv.draw(st);
+ if(lv.scare)s+=hs('scare',lv.scare.draw(!!st.sc));
+ s+=R(0,0,400,600,'url(#vig)','pointer-events="none"');
+ if(lv.isDark&&lv.isDark(st)&&!G.open)s+=R(0,0,400,600,'url(#fl)','pointer-events="none"');
+ if(G.peek){const [x,y]=G.peek;s+=hs('peek',`<g class="peek">${C(x,y,18,'#000','opacity=".01"')}${E(x-6,y,3.2,2.4,'#ff2a2a')}${E(x+6,y,3.2,2.4,'#ff2a2a')}${C(x-6,y,7,'#ff2a2a','opacity=".25"')}${C(x+6,y,7,'#ff2a2a','opacity=".25"')}</g>`)}
+ svg.innerHTML=s}
+function onHot(id){if(!G||G.busy)return;
+ if(id==='peek'){G.peek=null;if(!scare())say(L('Var det noen der?','Was someone there?'));drawScene();return}
+ if(id==='door'&&G.open){nextLevel();return}
+ SFX.click();
+ if(id==='scare'){const o=G.lv.scare,st=G.st;if(G.sel){nu();return}if(o.sfx)SFX[o.sfx]();if(!st.sc){st.sc=1;if(S.scary){if(o.delay)later(()=>scare(),o.delay);else scare();say(o.msg)}else say(o.calm)}else say(S.scary?o.after:o.calm);drawScene();return}
+ const r=G.lv.click(id,G.st,G.sel);
+ if(!r){if(G.sel)nu();else say('nothing')}
+ drawScene()}
+function keypad(len,check,ok){const ov=$('#ov');let v='';
+ const upd=()=>{$('#pd').textContent=(v+'_'.repeat(len)).slice(0,len)};
+ ov.innerHTML=`<div class="pad" id="padbox"><div class="disp" id="pd"></div><div class="keys">${[1,2,3,4,5,6,7,8,9,'C',0,'⏎'].map(k=>`<button data-k="${k}">${k}</button>`).join('')}</div><button class="x" data-k="X">${tx('close')}</button></div>`;ov.hidden=false;upd();
+ const submit=()=>{if(check(v)){SFX.good();ov.hidden=true;ok()}else{SFX.wrong();const p=$('#padbox');p.classList.remove('bad');void p.offsetWidth;p.classList.add('bad');say('wrongCode');v='';upd()}};
+ ov.onclick=e=>{if(e.target===ov){ov.hidden=true;return}const b=e.target.closest('[data-k]');if(!b)return;const k=b.dataset.k;
+  if(k==='X'){ov.hidden=true;return}if(k==='C'){v='';SFX.click();upd();return}if(k==='⏎'){if(v.length===len)submit();else SFX.wrong();return}
+  if(v.length<len){v+=k;SFX.beep();upd();if(v.length===len)setTimeout(submit,220)}}}
+function peekTick(){if(!G||G.peek||G.open||G.busy||!S.scary||!$('#ov').hidden)return;if(Math.random()<G.world.peekRate){const p=G.world.peek;G.peek=p[Math.floor(Math.random()*p.length)];SFX.whisper();drawScene();later(()=>{G.peek=null;drawScene()},2200)}}
+function chaseTick(){const c=G&&G.chase;if(!c||G.open||G.busy)return;c.t+=.25;const p=Math.min(1,c.t/c.max);const b=$('#cbar');if(b)b.style.width=(p*100)+'%';c.hb-=.25;if(c.hb<=0){SFX.heart();c.hb=Math.max(.35,1.6-p*1.3)}
+ if(c.t>=c.max){c.t=0;const g=G;$('#ov').hidden=true;if(!scare(true))SFX.wrong();setTimeout(()=>{if(G===g){startLevel(g.w,g.l,true);say('caught')}},1150)}}
+function clearG(){if(G)G.timers.forEach(t=>{clearTimeout(t);clearInterval(t)});stopAmb()}
+function startLevel(w,l,retry){clearG();const world=WORLDS[w],lv=world.levels[l];
+ G={w,l,world,lv,st:lv.init(),inv:[],sel:null,open:false,anim:false,peek:null,busy:false,fx:200,fy:380,timers:[],chase:lv.chase?{t:0,max:lv.chase,hb:1.5}:null};
+ scrGame();drawScene();drawInv();startAmb(world);
+ G.timers.push(setInterval(peekTick,1000));if(G.chase)G.timers.push(setInterval(chaseTick,250));
+ if(!retry)say(l===0?world.intro(heroName()):(lv.chase?L('Noe kommer! Skynd deg!','Something is coming! Hurry!'):L(`Dør ${w*5+l+1}. Hvordan kommer jeg meg ut herfra?`,`Door ${w*5+l+1}. How do I get out of here?`)))}
+function nextLevel(){SFX.step();const w=G.w,l=G.l;fade(()=>{if(l<4)startLevel(w,l+1);else scrWin(w)})}
+function fade(fn){const f=$('#fade');f.classList.add('on');setTimeout(()=>{fn();f.classList.remove('on')},430)}
+function svgPt(svg,e){const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const m=svg.getScreenCTM();return m?pt.matrixTransform(m.inverse()):{x:200,y:300}}
+let lastShake=0;
+window.addEventListener('devicemotion',e=>{const a=e.accelerationIncludingGravity;if(!a||!G||!G.lv.onShake||G.busy)return;const m=Math.abs(a.x||0)+Math.abs(a.y||0)+Math.abs(a.z||0);if(m>32&&Date.now()-lastShake>550){lastShake=Date.now();G.lv.onShake(G.st);drawScene()}});
+
+/* ================= SKJERMER ================= */
+const render=h=>{$('#app').innerHTML=h};
+function logoSVG(){return `<svg viewBox="0 0 110 140"><rect x="5" y="5" width="100" height="135" rx="4" fill="#3a2212"/><rect x="15" y="15" width="80" height="125" fill="#fff3c4"/><rect x="15" y="15" width="80" height="125" fill="url(#lg)"/><defs><radialGradient id="lg"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#f2c14e"/></radialGradient></defs><path d="M15 15 L55 25 L55 135 L15 140Z" fill="#7a4f26"/><circle cx="48" cy="80" r="3" fill="#f2c14e"/><ellipse cx="78" cy="70" rx="4" ry="3" fill="#c0392b"/><ellipse cx="90" cy="70" rx="4" ry="3" fill="#c0392b"/></svg>`}
+function scrStart(){clearG();G=null;
+ render(`<div class="screen menu"><div class="logo">${logoSVG()}</div><h1>${tx('title')}</h1><p class="sub">${tx('sub')}</p>
+ <div class="row"><button class="chip ${S.lang==='no'?'on':''}" data-lang="no">Norsk</button><button class="chip ${S.lang==='en'?'on':''}" data-lang="en">English</button></div>
+ <button class="big" id="play">${tx('play')}</button>
+ <div class="row"><button class="chip" id="tSc">👻 ${tx('scary')}: ${tx(S.scary?'on':'off')}</button><button class="chip" id="tSd">${S.sound?'🔊':'🔇'} ${tx('sound')}: ${tx(S.sound?'on':'off')}</button></div>
+ <p class="small">${tx('offline')}</p><button class="link" id="rst">${tx('reset')}</button></div>`);
+ document.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{S.lang=b.dataset.lang;document.documentElement.lang=S.lang==='no'?'no':'en';save();SFX.click();scrStart()});
+ $('#play').onclick=()=>{ac();SFX.good();scrHero()};
+ $('#tSc').onclick=()=>{S.scary=!S.scary;save();SFX.click();scrStart()};
+ $('#tSd').onclick=()=>{S.sound=!S.sound;save();ac();SFX.click();scrStart()};
+ $('#rst').onclick=()=>{if(confirm(tx('resetQ'))){S.prog=[0,0,0,0];save();scrStart()}}}
+function scrHero(){render(`<div class="screen menu"><h2>${tx('choose')}</h2><div class="heroes">${Object.keys(HEROES).map(h=>`<button class="hero ${S.hero===h?'on':''}" data-h="${h}">${heroSVG(h)}<b>${HEROES[h].name}</b></button>`).join('')}</div><button class="chip" id="hb">‹ ${S.lang==='no'?'Tilbake':'Back'}</button></div>`);
+ document.querySelectorAll('.hero').forEach(b=>b.onclick=()=>{S.hero=b.dataset.h;save();SFX.pick();scrWorlds()});$('#hb').onclick=scrStart}
+const worldOpen=i=>i<3||S.prog.slice(0,3).every(p=>p>=5);
+function preview(th){const d=th.d;return `<svg class="prev" viewBox="0 30 400 570" preserveAspectRatio="xMidYMid slice">${room(th)}${R(144,224,112,236,d.f)}${panel(150,d)}${panel(200,d)}</svg>`}
+function scrWorlds(){clearG();G=null;
+ render(`<div class="screen menu" style="justify-content:flex-start"><div class="wtop"><button class="back" id="wb">‹</button><h2>${tx('worlds')}</h2><span style="width:44px">${heroSVG(S.hero).replace('<svg','<svg width="44" height="44"')}</span></div>
+ <div class="worlds">${WORLDS.map((w,i)=>{const p=S.prog[i],open=worldOpen(i);return `<div class="wc"><div data-w="${i}">${preview(w)}</div><h3>${tx(w.name)}</h3><div class="dots">${[0,1,2,3,4].map(j=>`<button data-w="${i}" data-l="${j}" class="${j<p?'done':j===Math.min(p,4)&&p<5?'next':''}" ${open&&j<=p?'':'disabled'}>${i*5+j+1}</button>`).join('')}</div>${open?'':`<div class="lk"><b>🔒</b>${tx('lockedWorld')}</div>`}</div>`}).join('')}</div>
+ <p class="small">${S.lang==='no'?'Trykk på et bilde for å fortsette, eller velg en dør du har klart.':'Tap a picture to continue, or pick a door you have cleared.'}</p></div>`);
+ $('#wb').onclick=scrHero;
+ document.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{const w=+b.dataset.w;if(!worldOpen(w))return;const l=b.dataset.l!=null?+b.dataset.l:Math.min(S.prog[w]>=5?0:S.prog[w],4);ac();SFX.step();fade(()=>startLevel(w,l))})}
+function scrGame(){const w=G.world;
+ render(`<div class="screen game"><div class="top"><button id="gB">‹</button><div class="ttl">${tx(w.name)}<small>${tx('door')} ${G.w*5+G.l+1} / 20</small></div><button id="gH" title="${tx('hint')}">💡</button><button id="gS">${S.sound?'🔊':'🔇'}</button></div>
+ <div class="stage" id="stage"><svg id="scene" viewBox="0 0 400 600" preserveAspectRatio="xMidYMid meet"></svg>${G.chase?`<div id="chase"><span>👹</span><div class="bar"><i id="cbar"></i></div><span>${tx('chase')}</span></div>`:''}</div>
+ <div class="msg" id="msg"></div><div class="inv" id="inv"></div><div class="ov" id="ov" hidden></div></div>`);
+ const svg=$('#scene');
+ svg.addEventListener('click',e=>{const h=e.target.closest('[data-h]');if(h)onHot(h.dataset.h)});
+ const mv=e=>{if(!G)return;const p=svgPt(svg,e);G.fx=p.x;G.fy=p.y;const g=svg.querySelector('#fl');if(g){g.setAttribute('cx',p.x);g.setAttribute('cy',p.y)}};
+ svg.addEventListener('pointermove',mv);svg.addEventListener('pointerdown',mv);
+ $('#inv').onclick=e=>{const b=e.target.closest('.slot');if(!b||!G)return;const id=G.inv[+b.dataset.i];if(!id)return;SFX.click();G.sel=G.sel===id?null:id;if(G.sel)say(L(`${UI.no.selected}: ${ITEMS[id].no}. ${UI.no.tapUse}`,`${UI.en.selected}: ${ITEMS[id].en}. ${UI.en.tapUse}`));drawInv()};
+ $('#gB').onclick=()=>{SFX.click();scrWorlds()};
+ $('#gH').onclick=()=>{SFX.click();const h=G.lv.hint(G.st);say(L('💡 '+h.no,'💡 '+h.en))};
+ $('#gS').onclick=()=>{S.sound=!S.sound;save();$('#gS').textContent=S.sound?'🔊':'🔇';if(S.sound){ac();startAmb(G.world)}else stopAmb()}}
+function scrWin(w){clearG();G=null;SFX.win();const all=S.prog.every(p=>p>=5);const cols=['#f1c40f','#e74c3c','#3498db','#2ecc71','#e84393'];
+ const conf=Array.from({length:36},(_,i)=>`<span class="conf" style="left:${Math.random()*100}%;background:${cols[i%5]};animation-duration:${2+Math.random()*3}s;animation-delay:${-Math.random()*3}s"></span>`).join('');
+ const nextW=w<3&&worldOpen(w+1)?w+1:-1;
+ render(`<div class="screen win">${conf}<div class="hb">${heroSVG(S.hero)}</div><h1>${tx('win')}</h1><p class="sub">${heroName()} ${tx('escaped')} ${tx(WORLDS[w].name).toLowerCase()}!</p>${all?`<p class="sub" style="font-weight:800;color:#f2c14e">🏆 ${tx('allDone')}</p>`:''}
+ ${nextW>=0?`<button class="big" id="wn">${tx('next')}</button>`:''}<button class="chip" id="wm">${tx('menu')}</button></div>`);
+ if(nextW>=0)$('#wn').onclick=()=>fade(()=>startLevel(nextW,S.prog[nextW]>=5?0:S.prog[nextW]));
+ $('#wm').onclick=scrWorlds}
+
+/* ================= START ================= */
+load();document.documentElement.lang=S.lang==='no'?'no':'en';scrStart();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
